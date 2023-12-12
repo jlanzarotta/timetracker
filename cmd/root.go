@@ -44,11 +44,6 @@ import (
 
 var cfgFile string
 
-// var BuildDateTime string
-//var version = "1.0.1.0"
-
-//var version string
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "timetracker",
@@ -115,7 +110,7 @@ func initConfig() {
 	viper.SetDefault("require_note", false)
 
 	// Set day of the week when determining start of the week.
-	viper.SetDefault("week_start", "Monday")
+	viper.SetDefault("week_start", "Sunday")
 
 	// Set debug to false.
 	viper.SetDefault("debug", false)
@@ -127,6 +122,7 @@ func initConfig() {
 			// No config file, just use defaults.
 			log.Println("Unable to load config file, using/writing default values.")
 			viper.SafeWriteConfig()
+			writeFavorites(home)
 		} else {
 			log.Fatalf("Fatal error reading config file: %s\n", err.Error())
 			os.Exit(1)
@@ -149,5 +145,45 @@ func initConfig() {
 
 		db := database.New(viper.GetString(constants.DATABASE_FILE))
 		db.Create()
+	}
+}
+
+func writeFavorites(home string) {
+	// Populate the configuration file path and name.  We need to play some
+	// games here so that viper has a configuration file so we can append to it.
+	viper.AddConfigPath(home)
+	viper.SetConfigType("yaml")
+	viper.SetConfigName(".timetracker")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("Fatal error reading config file: %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	// Open our configuration file.
+	f, err := os.OpenFile(viper.ConfigFileUsed(), os.O_APPEND | os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Unable to write favorites to configuration file[%s].\n", viper.ConfigFileUsed())
+		os.Exit(1)
+	}
+
+	// Remember to close the file.
+	defer f.Close()
+
+	var lines = []string {
+		"favorites:",
+        "  - favorite: general+training",
+        "  - favorite: general+product development",
+        "  - favorite: general+personal time",
+        "  - favorite: general+holiday",
+        "  - favorite: general+vacation/PTO/Comp",
+	}
+
+	// Write our default favorites to the configuration file.
+	for _, line := range lines {
+		_, err := f.WriteString(line + "\n")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
 	}
 }
