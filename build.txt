@@ -4,6 +4,6 @@ To make a release...
 
 1. Make changes.
 2. Commit and push changes.
-3. git tag -a v0.1.0 -m "First release."
-4. git push origin v0.1.0
+3. git tag -a 0.1.0 -m "First release."
+4. git push origin 0.1.0
 5. goreleaser release
