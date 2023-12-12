@@ -34,6 +34,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"path/filepath"
 	"timetracker/constants"
 	"timetracker/internal/database"
 
@@ -50,7 +51,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use: "timetracker",
+	Use:   "timetracker",
 	Short: "Simple program used to track time spent on projects and tasks.",
 	Long: `Time Tracker is a simple command line tool use to track the time you spend
 on a specific project and the one or more tasks associated with that project.
@@ -87,25 +88,25 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
+	// Find home directory.
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+
+	if cfgFile != constants.EMPTY {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
 		// Search config in home directory with name ".timetracker" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".timetracker.yaml")
+		viper.SetConfigName(".timetracker")
 	}
 
 	// Read in environment variables that match.
 	viper.AutomaticEnv()
 
 	// Set default database.
-	viper.SetDefault("database_file", os.ExpandEnv("$HOME/.timetracker.db"))
+	viper.SetDefault("database_file", filepath.Join(home, ".timetracker.db"))
 
 	// Round to 15 minute intervals by default.
 	viper.SetDefault("round_to_minutes", 15)
@@ -120,11 +121,12 @@ func initConfig() {
 	viper.SetDefault("debug", false)
 
 	// Read the configuration file.
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// No config file, just use defaults.
-			log.Println("unable to load config file, using default values.")
+			log.Println("Unable to load config file, using/writing default values.")
+			viper.SafeWriteConfig()
 		} else {
 			log.Fatalf("Fatal error reading config file: %s\n", err.Error())
 			os.Exit(1)
