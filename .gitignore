@@ -19,3 +19,12 @@
 
 # Go workspace file
 go.work
+
+# Visual Studio Code related stuff.
+.vscode
+
+# Github token.
+github_token
+
+# goreleaser dist directory.
+dist/

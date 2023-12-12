@@ -1,2 +1,2 @@
 # timetracker
-Simple time tracker written in Go.
+Simple time trackering software written in Go.
