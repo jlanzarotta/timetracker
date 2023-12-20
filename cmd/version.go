@@ -8,7 +8,6 @@ import (
 )
 
 var BuildVersion string
-// var vedrsion string = "1.0.1.0"
 var BuildDateTime string
 
 // addCmd represents the add command
