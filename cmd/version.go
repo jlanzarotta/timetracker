@@ -26,8 +26,7 @@ func init() {
 }
 
 func runVersion(cmd *cobra.Command, args []string) {
-	log.Printf("Version: " + BuildVersion + "\n" +
+	log.Printf("  Version: " + BuildVersion + "\n" +
 		"Copyright: (c) 2018-" + time.Now().Format("2006") +
-		" Jeff Lanzarotta, All rights reserved\nBorn on: " + BuildDateTime + "\n")
-
+		" Jeff Lanzarotta, All rights reserved\n  Born on: " + BuildDateTime + "\n")
 }
