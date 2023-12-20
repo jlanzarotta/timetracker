@@ -19,6 +19,7 @@ import (
 
 	"github.com/agrison/go-commons-lang/stringUtils"
 	"github.com/golang-module/carbon/v2"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -108,12 +109,6 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 	log.Printf("\n")
 	log.Printf("%s\n", dashes(" By Day "))
 	log.Printf("\n")
-	log.Printf(constants.REPORT_BY_DAY_FORMAT, "Date", "Duration", "Project", "Task(s)")
-	log.Printf(constants.REPORT_BY_DAY_FORMAT,
-		strings.Repeat("-", constants.PRINT_DATE_WIDTH),
-		strings.Repeat("-", constants.PRINT_DURATION_WIDTH),
-		strings.Repeat("-", constants.PRINT_PROJECT_WIDTH),
-		strings.Repeat("-", constants.PRINT_TASK_WIDTH))
 
 	// Consolidate by day.
 	var consolidatedByDay map[string]map[string]models.Entry = make(map[string]map[string]models.Entry)
@@ -164,27 +159,31 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 	}
 	sort.SliceStable(sortedKeys, func(i, j int) bool { return sortedKeys[i] < sortedKeys[j] })
 
-	// Display all the consolidated rows.
+	// Create and configure the table.
+	var t table.Writer = table.NewWriter()
+	// t.SetStyle(table.StyleColoredBright)
+	// t.SetStyle(table.StyleColoredBlackOnGreenWhite)
+	// t.SetStyle(table.StyleColoredBright)
+	t.Style().Options.DrawBorder = false
+	t.AppendHeader(table.Row{"Date", "Duration", "Project", "Task(s)"});
+
+	// Add each row to the table.
 	for _, i := range sortedKeys {
 		var day map[string]models.Entry = consolidatedByDay[i]
 
 		for p, v := range day {
-			log.Printf(constants.REPORT_BY_DAY_FORMAT, i, secondsToHuman(round(v.Duration)), p, v.GetTasksAsString())
+			t.AppendRow(table.Row{i, secondsToHuman(round(v.Duration)), p, v.GetTasksAsString()})
 		}
 	}
+
+	// Render the table.
+	fmt.Println(t.Render())
 }
 
 func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
+	log.Printf("\n")
 	log.Printf("%s\n", dashes(" By Entry "))
 	log.Printf("\n")
-	log.Printf(constants.REPORT_BY_ENTRY_FORMAT, "Duration", "Date", "Start-End", "Project", "Task", "Note")
-	log.Printf(constants.REPORT_BY_ENTRY_FORMAT,
-		strings.Repeat("-", constants.PRINT_DURATION_WIDTH),
-		strings.Repeat("-", constants.PRINT_DATE_WIDTH),
-		strings.Repeat("-", constants.PRINT_START_END_WIDTH),
-		strings.Repeat("-", constants.PRINT_PROJECT_WIDTH),
-		strings.Repeat("-", constants.PRINT_TASK_WIDTH),
-		strings.Repeat("-", constants.PRINT_NOTE_WIDTH))
 
 	// Consolidate
 	var consolidatedByUid map[int64]models.Entry = make(map[int64]models.Entry)
@@ -216,21 +215,29 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 	}
 	sort.SliceStable(sortedKeys, func(i, j int) bool { return sortedKeys[i] < sortedKeys[j] })
 
-	// Display all the consolidated rows.
+	// Create and configure the table.
+	var t table.Writer = table.NewWriter()
+	t.Style().Options.DrawBorder = false
+	t.AppendHeader(table.Row{"Duration", "Date", "Start-End", "Project", "Task", "Note"});
+
+	// Add all the consolidated rows to the table.
 	for _, i := range sortedKeys {
 		var entry models.Entry = consolidatedByUid[i]
 
 		// Skip entries that match constants.HELLO.
 		if !strings.EqualFold(entry.Project, constants.HELLO) {
-			log.Printf(constants.REPORT_BY_ENTRY_FORMAT,
+			t.AppendRow(table.Row{
 				secondsToHuman(round(entry.Duration)),
 				carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_DATE_FORMAT),
 				carbon.Parse(entry.EntryDatetime).SubSeconds(int(entry.Duration)).Format(constants.CARBON_START_END_TIME_FORMAT)+" to "+carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_START_END_TIME_FORMAT),
 				entry.Project,
 				entry.GetTasksAsString(),
-				entry.Note)
+				entry.Note})
 		}
 	}
+
+	// Render the table.
+	fmt.Println(t.Render())
 }
 
 func reportByLastEntry() {
@@ -238,20 +245,16 @@ func reportByLastEntry() {
 	var entry models.Entry = db.GetLastEntry()
 	if strings.EqualFold(entry.Project, constants.HELLO) ||
 		strings.EqualFold(entry.Project, constants.BREAK) {
-			log.Printf("Project[%s].\n", entry.Project)
+			log.Printf("EntryDateTime: %s\n      Project: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project)
 	} else {
-		log.Printf("Project[%s] Tasks[%s].\n", entry.Project, entry.GetTasksAsString())
+		log.Printf("EntryDateTime: %s\n      Project: %s\n  Tasks: %s.\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project, entry.GetTasksAsString())
 	}
 }
 
 func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
+	log.Printf("\n")
 	log.Printf("%s\n", dashes(" By Project "))
 	log.Printf("\n")
-	log.Printf(constants.REPORT_BY_PROJECT_FORMAT, "Duration", "Project", "Task(s)")
-	log.Printf(constants.REPORT_BY_PROJECT_FORMAT,
-		strings.Repeat("-", constants.PRINT_DURATION_WIDTH),
-		strings.Repeat("-", constants.PRINT_PROJECT_WIDTH),
-		strings.Repeat("-", constants.PRINT_TASK_WIDTH))
 
 	// Consolidate by project.
 	var consolidatedByProject map[string]models.Entry = make(map[string]models.Entry)
@@ -289,15 +292,23 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 	}
 	sort.SliceStable(sortedKeys, func(i, j int) bool { return sortedKeys[i] < sortedKeys[j] })
 
-	// Display all the consolidated rows.
+	// Create and configure the table.
+	var t table.Writer = table.NewWriter()
+	t.Style().Options.DrawBorder = false
+	t.AppendHeader(table.Row{"Duration", "Project", "Task(s)"});
+
+	// Add all the consolidated rows to the table.
 	for _, i := range sortedKeys {
 		var entry models.Entry = consolidatedByProject[i]
 
 		// Skip entries that match constants.HELLO.
 		if !strings.EqualFold(entry.Project, constants.HELLO) {
-			log.Printf(constants.REPORT_BY_PROJECT_FORMAT, secondsToHuman(round(entry.Duration)), entry.Project, entry.GetTasksAsString())
+			t.AppendRow(table.Row{secondsToHuman(round(entry.Duration)), entry.Project, entry.GetTasksAsString()})
 		}
 	}
+
+	// Render the table.
+	fmt.Println(t.Render())
 }
 
 func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
@@ -320,9 +331,8 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 	}
 
 	log.Printf("\n")
-	log.Printf("Total Working Time: %s\n", secondsToHuman(totalWorkDuration))
-	log.Printf("Total Break Time  : %s\n", secondsToHuman(totalBreakDuration))
-	log.Printf("\n")
+	log.Printf("Total Working Time: %s\n", secondsToHuman(round(totalWorkDuration)))
+	log.Printf("Total Break Time  : %s\n", secondsToHuman(round(totalBreakDuration)))
 }
 
 func round(durationInSeconds int64) (result int64) {
