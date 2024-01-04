@@ -65,6 +65,7 @@ func init() {
 	reportCmd.Flags().BoolP("last-entry", constants.EMPTY, false, "Display the last entry's information")
 	reportCmd.Flags().StringVarP(&from, "from", constants.EMPTY, constants.EMPTY, "Specify an inclusive start date to report in "+constants.DATE_FORMAT+" format")
 	reportCmd.Flags().StringVarP(&to, "to", constants.EMPTY, constants.EMPTY, "Specify an inclusive end date to report in "+constants.DATE_FORMAT+" format.  If this is a day of the week, then it is the next occurrence from the start date of the report, including the start date itself")
+	reportCmd.MarkFlagsRequiredTogether("from", "to")
 	rootCmd.AddCommand(reportCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -154,7 +155,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 		}
 	}
 
-	// Since maps are not sorter in go... why, I have no idea, you need to first
+	// Since maps are not sorted in go... why, I have no idea, you need to first
 	// sort the keys and then access the map via those sorted keys.
 	var sortedKeys []string = make([]string, 0, len(consolidatedByDay))
 	for key := range consolidatedByDay {
@@ -288,7 +289,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 		}
 	}
 
-	// Since maps are not sorter in go... why, I have no idea, you need to first
+	// Since maps are not sorted in go... why, I have no idea, you need to first
 	// sort the keys and then access the map via those sorted keys.
 	var sortedKeys []string = make([]string, 0, len(consolidatedByProject))
 	for key := range consolidatedByProject {
@@ -362,16 +363,8 @@ func runReport(cmd *cobra.Command, args []string) {
 	currentWeek, _ := cmd.Flags().GetBool("current-week")
 	previousWeek, _ := cmd.Flags().GetBool("previous-week")
 	lastEntry, _ := cmd.Flags().GetBool("last-entry")
-
 	fromDateStr, _ := cmd.Flags().GetString("from")
-	if !stringUtils.IsEmpty(fromDateStr) {
-		start = carbon.Parse(fromDateStr)
-	}
-
 	toDateStr, _ := cmd.Flags().GetString("to")
-	if !stringUtils.IsEmpty(toDateStr) {
-		end = carbon.Parse(fromDateStr)
-	}
 
 	var reportNow = carbon.Now()
 
@@ -386,6 +379,10 @@ func runReport(cmd *cobra.Command, args []string) {
 		stringUtils.IsEmpty(toDateStr) &&
 		previousWeek {
 		start, end = dateRange(reportNow.SubWeek())
+	} else if !stringUtils.IsEmpty(fromDateStr) &&
+	    !stringUtils.IsEmpty(toDateStr) {
+		start = carbon.Parse(fromDateStr)
+		end = carbon.Parse(toDateStr)
 	} else {
 		reportByLastEntry()
 		os.Exit(0)

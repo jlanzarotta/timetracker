@@ -32,12 +32,16 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"timetracker/constants"
 	"timetracker/internal/database"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -51,9 +55,12 @@ var rootCmd = &cobra.Command{
 	Long: `Time Tracker is a simple command line tool use to track the time you spend
 on a specific project and the one or more tasks associated with that project.
 It was inspired by the concepts of utt (Ultimate Time Tracker) and timetrap.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("No commands given. Run 'tt help' for usage help.\n" +
+			"Also try commands:\n\n" +
+			"tt version\n" +
+			"tt help report")
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -67,6 +74,21 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	cobra.AddTemplateFunc("StyleHeading", color.New(color.FgGreen).SprintFunc())
+	usageTemplate := rootCmd.UsageTemplate()
+	usageTemplate = strings.NewReplacer(
+		`Usage:`, `{{StyleHeading "Usage:"}}`,
+		`Aliases:`, `{{StyleHeading "Aliases:"}}`,
+		`Available Commands:`, `{{StyleHeading "Available Commands:"}}`,
+		`Global Flags:`, `{{StyleHeading "Global Flags:"}}`,
+		// The following one steps on "Global Flags:"
+		`Flags:`, `{{StyleHeading "Flags:"}}`,
+	).Replace(usageTemplate)
+	re := regexp.MustCompile(`(?m)^Flags:\s*$`)
+	usageTemplate = re.ReplaceAllLiteralString(usageTemplate, `{{StyleHeading "Flags:"}}`)
+	rootCmd.SetUsageTemplate(usageTemplate)
+	rootCmd.SetOutput(color.Output)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

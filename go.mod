@@ -11,11 +11,14 @@ require (
 )
 
 require (
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 )
 
 require (
+	github.com/fatih/color v1.16.0
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/ijt/goparsify v0.0.0-20221203142333-3a5276334b8d // indirect
