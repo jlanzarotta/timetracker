@@ -275,9 +275,9 @@ func (db *Database) GetLastEntry() models.Entry {
 			if strings.EqualFold(e.Project, constants.HELLO) {
 				break
 			}
-		} else {
-			entry.AddProperty(e.Name.String, e.Value.String)
 		}
+
+		entry.AddProperty(e.Name.String, e.Value.String)
 	}
 
 	return entry

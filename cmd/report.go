@@ -248,9 +248,10 @@ func reportByLastEntry() {
 	var entry models.Entry = db.GetLastEntry()
 	if strings.EqualFold(entry.Project, constants.HELLO) ||
 		strings.EqualFold(entry.Project, constants.BREAK) {
-		log.Printf("EntryDateTime: %s\n      Project: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project)
+		log.Printf("DateTime: %s\n      Project: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project)
 	} else {
-		log.Printf("EntryDateTime: %s\n      Project: %s\n  Tasks: %s.\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project, entry.GetTasksAsString())
+		log.Printf("%s\n", entry.Dump())
+		log.Printf("DateTime: %s\n Project: %s\n   Tasks: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project, entry.GetTasksAsString())
 	}
 }
 
@@ -385,6 +386,9 @@ func runReport(cmd *cobra.Command, args []string) {
 		stringUtils.IsEmpty(toDateStr) &&
 		previousWeek {
 		start, end = dateRange(reportNow.SubWeek())
+	} else {
+		reportByLastEntry()
+		os.Exit(0)
 	}
 
 	var startWeek int = start.WeekOfYear()
