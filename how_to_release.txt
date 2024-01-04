@@ -7,3 +7,4 @@ To make a release...
 3. git tag -a 0.1.0 -m "First release."
 4. git push origin 0.1.0
 5. goreleaser release
+6. Go to github and make the release.
