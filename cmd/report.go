@@ -251,7 +251,6 @@ func reportByLastEntry() {
 		strings.EqualFold(entry.Project, constants.BREAK) {
 		log.Printf("DateTime: %s\n      Project: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project)
 	} else {
-		log.Printf("%s\n", entry.Dump())
 		log.Printf("DateTime: %s\n Project: %s\n   Tasks: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project, entry.GetTasksAsString())
 	}
 }
