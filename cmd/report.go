@@ -379,7 +379,7 @@ func runReport(cmd *cobra.Command, args []string) {
 		previousWeek {
 		start, end = dateRange(reportNow.SubWeek())
 	} else if !stringUtils.IsEmpty(fromDateStr) &&
-	    !stringUtils.IsEmpty(toDateStr) {
+		!stringUtils.IsEmpty(toDateStr) {
 		start = carbon.Parse(fromDateStr)
 		end = carbon.Parse(toDateStr)
 	} else {
