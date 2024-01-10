@@ -115,36 +115,6 @@ func (db *Database) InsertNewEntry(entry models.Entry) {
 	}
 }
 
-//	select DISTINCT
-//	e.uid, entry_datetime
-//	from entry e
-//	where e.entry_datetime BETWEEN '2023-11-19 00:00:00 -0500 EST' AND '2023-12-01 00:00:00 -0500 EST'
-//	order by entry_datetime;
-//
-//	select e.uid, e.project, e.note, e.entry_datetime, p.name, p.value
-//	from entry e
-//	left outer join property p on p.entry_uid = e.uid
-//	where e.uid in (1, 2, 3, 4)
-//	order by entry_datetime;
-//
-//	select e.uid, e.project, e.note, e.entry_datetime, p.name, p.value
-//	from entry e
-//	left outer join property p on p.entry_uid = e.uid
-//	where e.uid in (1, 2, 3, 4) and p.name = "task" and p.value = "task1"
-//	order by e.entry_datetime, p.name, p.value
-//
-//	select e.uid, e.project, e.note, e.entry_datetime, p.name, p.value
-//	from entry e
-//	left outer join property p on p.entry_uid = e.uid
-//	where e.uid in (1, 2, 3, 4) and p.name = "task" and p.value = "task2"
-//	order by e.entry_datetime, p.name, p.value
-//
-//	select e.uid, e.project, e.note, e.entry_datetime, p.name, p.value
-//	from entry e
-//	left outer join property p on p.entry_uid = e.uid
-//	where e.uid in (1, 2, 3, 4) and p.name = "task" and p.value = "task3"
-//	order by e.entry_datetime, p.name, p.value
-
 func (db *Database) GetDistinctUIDs(start carbon.Carbon, end carbon.Carbon) []DistinctUID {
 	results, err := db.Conn.Query(`
 		SELECT DISTINCT
@@ -174,36 +144,6 @@ func (db *Database) GetDistinctUIDs(start carbon.Carbon, end carbon.Carbon) []Di
 
 	return records
 }
-
-//func (db *Database) GetDistinctEntries(start time.Time, end time.Time) []DistinctEntry {
-//	results, err := db.Conn.Query(`
-//		SELECT DISTINCT
-//			e.uid, e.project, e.entry_datetime
-//		FROM entry e
-//		WHERE e.entry_datetime BETWEEN ? AND ?
-//		ORDER BY entry_datetime;
-//		`, start, end,
-//	)
-//
-//	if err != nil {
-//		log.Fatalf("Fatal Error trying to retrieve Report records. %s.", err.Error())
-//		os.Exit(1)
-//	}
-//
-//	records := []DistinctEntry{}
-//	for results.Next() {
-//		var distinctEntry DistinctEntry
-//		err = results.Scan(&distinctEntry.Uid, &distinctEntry.Project, &distinctEntry.EntryDatetime)
-//		if err != nil {
-//			log.Fatalf("Fatal error trying to Scan DistinctEntries results into data structure. %s\n", err.Error())
-//			os.Exit(1)
-//		}
-//
-//		records = append(records, distinctEntry)
-//	}
-//
-//	return records
-//}
 
 func (db *Database) GetEntries(in string) []Entry {
 	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime, p.name, p.value FROM entry e LEFT OUTER JOIN property p on p.entry_uid = e.uid WHERE e.uid IN (%s) ORDER BY entry_datetime;", in)
