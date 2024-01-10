@@ -336,7 +336,7 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 
 	log.Printf("\n")
 	log.Printf("Total Working Time: %s\n", secondsToHuman(round(totalWorkDuration)))
-	log.Printf("Total Break Time  : %s\n", secondsToHuman(round(totalBreakDuration)))
+	log.Printf("  Total Break Time: %s\n", secondsToHuman(round(totalBreakDuration)))
 }
 
 func round(durationInSeconds int64) (result int64) {
