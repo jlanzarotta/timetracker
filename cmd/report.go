@@ -430,7 +430,7 @@ func runReport(cmd *cobra.Command, args []string) {
 		if i == 0 || strings.EqualFold(distinctUIDs[i].Project, constants.HELLO) {
 			var current carbon.Carbon = carbon.Parse(distinctUIDs[i].EntryDatetime)
 			if current.Error != nil {
-				log.Fatalf("Unable to pase EntryDateTime. %s\n", current.Error)
+				log.Fatalf("Unable to parse EntryDateTime. %s\n", current.Error)
 				os.Exit(1)
 			}
 
@@ -441,13 +441,13 @@ func runReport(cmd *cobra.Command, args []string) {
 		} else {
 			var current carbon.Carbon = carbon.Parse(distinctUIDs[i].EntryDatetime)
 			if current.Error != nil {
-				log.Fatalf("Unable to pase EntryDateTime. %s\n", current.Error)
+				log.Fatalf("Unable to parse EntryDateTime. %s\n", current.Error)
 				os.Exit(1)
 			}
 
 			var prior carbon.Carbon = carbon.Parse(distinctUIDs[i-1].EntryDatetime)
 			if prior.Error != nil {
-				log.Fatalf("Unable to pase EntryDateTime. %s\n", prior.Error)
+				log.Fatalf("Unable to parse EntryDateTime. %s\n", prior.Error)
 				os.Exit(1)
 			}
 
