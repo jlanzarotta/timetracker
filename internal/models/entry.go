@@ -19,7 +19,7 @@ func NewEntry(uid int64, project string, note string, entryDatetime string) Entr
 	return e
 }
 
-func (e *Entry) AddProperty(name string, value string) {
+func (e *Entry) AddEntryProperty(name string, value string) {
 	var found bool = false
 	for _, element := range e.Properties {
 		if strings.EqualFold(element.Name, name) && strings.EqualFold(element.Value, value) {
@@ -31,7 +31,6 @@ func (e *Entry) AddProperty(name string, value string) {
 	if !found {
 		var property Property = NewProperty(e.Uid, name, value)
 		e.Properties = append(e.Properties, property)
-
 	}
 }
 

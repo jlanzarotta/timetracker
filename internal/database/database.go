@@ -217,7 +217,7 @@ func (db *Database) GetLastEntry() models.Entry {
 			}
 		}
 
-		entry.AddProperty(e.Name.String, e.Value.String)
+		entry.AddEntryProperty(e.Name.String, e.Value.String)
 	}
 
 	return entry

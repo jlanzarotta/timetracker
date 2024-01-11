@@ -122,7 +122,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 			consolidatedProject, found := consolidatedDay[e.Project]
 			if found {
 				if e.Name.Valid {
-					consolidatedProject.AddProperty(e.Name.String, e.Value.String)
+					consolidatedProject.AddEntryProperty(e.Name.String, e.Value.String)
 				}
 
 				// Add the rounded durations together.
@@ -134,7 +134,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 				var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
 				entry.Duration = durations[e.Uid].Duration
 				if e.Name.Valid {
-					entry.AddProperty(e.Name.String, e.Value.String)
+					entry.AddEntryProperty(e.Name.String, e.Value.String)
 				}
 
 				// Add the new entry.
@@ -145,7 +145,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 			var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
 			entry.Duration = durations[e.Uid].Duration
 			if e.Name.Valid {
-				entry.AddProperty(e.Name.String, e.Value.String)
+				entry.AddEntryProperty(e.Name.String, e.Value.String)
 			}
 
 			// Add the new entry.
@@ -167,7 +167,6 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 	var t table.Writer = table.NewWriter()
 	// t.SetStyle(table.StyleColoredBright)
 	// t.SetStyle(table.StyleColoredBlackOnGreenWhite)
-	// t.SetStyle(table.StyleColoredBright)
 	t.Style().Options.DrawBorder = false
 	t.AppendHeader(table.Row{"Date", "Duration", "Project", "Task(s)"})
 
@@ -196,7 +195,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 		consolidated, found := consolidatedByUid[e.Uid]
 		if found {
 			if e.Name.Valid {
-				consolidated.AddProperty(e.Name.String, e.Value.String)
+				consolidated.AddEntryProperty(e.Name.String, e.Value.String)
 			}
 
 			// Add the consolidated object to the collection.
@@ -205,7 +204,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 			var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
 			entry.Duration = durations[e.Uid].Duration
 			if e.Name.Valid {
-				entry.AddProperty(e.Name.String, e.Value.String)
+				entry.AddEntryProperty(e.Name.String, e.Value.String)
 			}
 			consolidatedByUid[e.Uid] = entry
 		}
@@ -267,7 +266,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 		consolidated, found := consolidatedByProject[e.Project]
 		if found {
 			if e.Name.Valid {
-				consolidated.AddProperty(e.Name.String, e.Value.String)
+				consolidated.AddEntryProperty(e.Name.String, e.Value.String)
 			}
 
 			// If the Uid changes, add the new duration.
@@ -282,7 +281,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 			var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
 			entry.Duration = durations[e.Uid].Duration
 			if e.Name.Valid {
-				entry.AddProperty(e.Name.String, e.Value.String)
+				entry.AddEntryProperty(e.Name.String, e.Value.String)
 			}
 			consolidatedByProject[e.Project] = entry
 		}
@@ -316,6 +315,40 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 }
 
 func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
+	log.Printf("\n")
+	log.Printf("%s\n", dashes(" By Task "))
+	log.Printf("\n")
+
+	var consolidateByTask map[string]models.Task = make(map[string]models.Task)
+	for _, e := range entries {
+		if strings.EqualFold(e.Project, constants.HELLO) {
+			continue;
+		} else {
+			consolidated, found := consolidateByTask[e.Value.String]
+			if found {
+				consolidated.Duration += durations[e.Uid].Duration
+				consolidateByTask[e.Value.String] = consolidated
+			} else {
+				var task models.Task = models.NewTask(e.Value.String)
+				task.Duration = durations[e.Uid].Duration
+				task.AddTaskProperty(constants.PROJECT, e.Project)
+				consolidateByTask[e.Value.String] = task;
+			}
+		}
+	}
+
+	// Create and configure the table.
+	var t table.Writer = table.NewWriter()
+	t.Style().Options.DrawBorder = false
+	t.AppendHeader(table.Row{"Duration", "Task(s)", "Project(s)"})
+
+	// Populate the table.
+	for _, v := range consolidateByTask {
+		t.AppendRow(table.Row{secondsToHuman(round(v.Duration)), v.Task, v.GetProjectsAsString()})
+	}
+
+	// Render the table.
+	fmt.Println(t.Render())
 }
 
 func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []database.Entry) {

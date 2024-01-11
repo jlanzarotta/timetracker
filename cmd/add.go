@@ -121,7 +121,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 
 	// Populate the newly created Entry with its tasks.
 	for i := 1; i < len(pieces); i += 1 {
-		entry.AddProperty(constants.TASK, pieces[i])
+		entry.AddEntryProperty(constants.TASK, pieces[i])
 	}
 
 	log.Printf("Adding %s\n", entry.Dump())
