@@ -368,7 +368,7 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 	}
 
 	log.Printf("\n")
-	log.Printf("Total Working Time: %s\n", secondsToHuman(round(totalWorkDuration)))
+	log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(round(totalWorkDuration)), secondsToHMS(round(totalWorkDuration)))
 	log.Printf("  Total Break Time: %s\n", secondsToHuman(round(totalBreakDuration)))
 }
 
@@ -528,19 +528,36 @@ func runReport(cmd *cobra.Command, args []string) {
 	reportByDay(durations, entries)
 }
 
-func secondsToHuman(input int64) (result string) {
-	years := math.Floor(float64(input) / 60 / 60 / 24 / 7 / 30 / 12)
-	seconds := input % (60 * 60 * 24 * 7 * 30 * 12)
+func secondsToHMS(inSeconds int64) (result string) {
+	hours := inSeconds / 3600
+	inSeconds = inSeconds % 3600
+	minutes := inSeconds / 60
+	seconds := inSeconds % 60
+
+	if hours > 0 {
+		result = plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
+	} else if minutes > 0 {
+		result = plural(int(minutes), "minute") + plural(int(seconds), "second")
+	} else {
+		result = plural(int(seconds), "second")
+	}
+
+	return stringUtils.Trim(result)
+}
+
+func secondsToHuman(inSeconds int64) (result string) {
+	years := math.Floor(float64(inSeconds) / 60 / 60 / 24 / 7 / 30 / 12)
+	seconds := inSeconds % (60 * 60 * 24 * 7 * 30 * 12)
 	months := math.Floor(float64(seconds) / 60 / 60 / 24 / 7 / 30)
-	seconds = input % (60 * 60 * 24 * 7 * 30)
+	seconds = inSeconds % (60 * 60 * 24 * 7 * 30)
 	weeks := math.Floor(float64(seconds) / 60 / 60 / 24 / 7)
-	seconds = input % (60 * 60 * 24 * 7)
+	seconds = inSeconds % (60 * 60 * 24 * 7)
 	days := math.Floor(float64(seconds) / 60 / 60 / 24)
-	seconds = input % (60 * 60 * 24)
+	seconds = inSeconds % (60 * 60 * 24)
 	hours := math.Floor(float64(seconds) / 60 / 60)
-	seconds = input % (60 * 60)
+	seconds = inSeconds % (60 * 60)
 	minutes := math.Floor(float64(seconds) / 60)
-	seconds = input % 60
+	seconds = inSeconds % 60
 
 	if years > 0 {
 		result = plural(int(years), "year") + plural(int(months), "month") + plural(int(weeks), "week") + plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
