@@ -1,3 +1,5 @@
+[![GitHub release](https://github.com/jlanzarotta/timetracker)](https://github.com/jlanzarotta/timetracker/releases/)
+
 = Time Tracker
 :toc: left
 :toclevels: 6
