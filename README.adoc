@@ -1,5 +1,4 @@
-[![GitHub release](https://github.com/jlanzarotta/timetracker)](https://github.com/jlanzarotta/timetracker/releases/)
-image:https://img.shields.io/badge/:badgeContent[Static Badge]
+image:https://img.shields.io/github/v/release/jlanzarotta/timetracker[GitHub Release]
 
 = Time Tracker
 :toc: left
