@@ -52,7 +52,6 @@ func dashes(input string) string {
 	return (fmt.Sprintf("%s %s %s", pad, input, pad))
 }
 
-// func dateRange(date time.Time) (start time.Time, end time.Time) {
 func dateRange(date carbon.Carbon) (start carbon.Carbon, end carbon.Carbon) {
 	start = weekStart(date)
 	end = start.AddDays(6).EndOfDay()
@@ -60,6 +59,7 @@ func dateRange(date carbon.Carbon) (start carbon.Carbon, end carbon.Carbon) {
 }
 
 func init() {
+	reportCmd.Flags().BoolP("no-rounding", constants.EMPTY, false, "Reports all durations in their unrounded form")
 	reportCmd.Flags().BoolP("current-week", constants.EMPTY, false, "Report on the current week's entries")
 	reportCmd.Flags().BoolP("previous-week", constants.EMPTY, false, "Report on the previous week's entries")
 	reportCmd.Flags().BoolP("last-entry", constants.EMPTY, false, "Display the last entry's information")
@@ -391,7 +391,15 @@ func runReport(cmd *cobra.Command, args []string) {
 	var start carbon.Carbon
 	var end carbon.Carbon
 
-	roundToMinutes = viper.GetInt64(constants.ROUND_TO_MINUTES)
+	// See if the user asked to override round.  If no, use the rounding value
+	// from the configuration file.  Otherwise, set the rounding value to 0.
+	noRounding, _ := cmd.Flags().GetBool("no-rounding")
+	if (!noRounding) {
+		roundToMinutes = viper.GetInt64(constants.ROUND_TO_MINUTES)
+	} else {
+		roundToMinutes = 0
+	}
+		
 	currentWeek, _ := cmd.Flags().GetBool("current-week")
 	previousWeek, _ := cmd.Flags().GetBool("previous-week")
 	lastEntry, _ := cmd.Flags().GetBool("last-entry")
