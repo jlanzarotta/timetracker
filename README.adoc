@@ -223,15 +223,16 @@ By specifying the option `--to` _date_, this tells Time Tracker you would the re
 $ tt report --to 2019-03-02
 ----
 
-===== --round
+===== --no-rounding
 
-By specifying the option `--round`, this tells Time Tracker you would
-the all the duration to be rounded up to the nearest 15 minute interval on your report.
+By specifying the option `--no-rounding`, this tells Time Tracker you would
+the all the duration to be their original, unrounded values.  This option is good it you have durations that are
+less than the value you have configured for rounding.
 
 [source, shell]
 ----
-$ tt report --from 2019-04-01 --to 2019-04-13 --round
-$ tt report --previous-week --round
+$ tt report --from 2019-04-01 --to 2019-04-13 --no-rounding
+$ tt report --previous-week --no-rounding
 ----
 
 === stretch
