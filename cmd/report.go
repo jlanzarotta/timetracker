@@ -554,33 +554,40 @@ func secondsToHMS(inSeconds int64) (result string) {
 }
 
 func secondsToHuman(inSeconds int64) (result string) {
-	years := math.Floor(float64(inSeconds) / 60 / 60 / 24 / 7 / 30 / 12)
-	seconds := inSeconds % (60 * 60 * 24 * 7 * 30 * 12)
-	months := math.Floor(float64(seconds) / 60 / 60 / 24 / 7 / 30)
-	seconds = inSeconds % (60 * 60 * 24 * 7 * 30)
-	weeks := math.Floor(float64(seconds) / 60 / 60 / 24 / 7)
-	seconds = inSeconds % (60 * 60 * 24 * 7)
-	days := math.Floor(float64(seconds) / 60 / 60 / 24)
-	seconds = inSeconds % (60 * 60 * 24)
-	hours := math.Floor(float64(seconds) / 60 / 60)
-	seconds = inSeconds % (60 * 60)
-	minutes := math.Floor(float64(seconds) / 60)
-	seconds = inSeconds % 60
-
-	if years > 0 {
-		result = plural(int(years), "year") + plural(int(months), "month") + plural(int(weeks), "week") + plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
-	} else if months > 0 {
-		result = plural(int(months), "month") + plural(int(weeks), "week") + plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
-	} else if weeks > 0 {
-		result = plural(int(weeks), "week") + plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
-	} else if days > 0 {
-		result = plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
-	} else if hours > 0 {
-		result = plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
-	} else if minutes > 0 {
-		result = plural(int(minutes), "minute") + plural(int(seconds), "second")
+	// If the duration is zero, this means than the rounded value is less than
+	// the "round to minutes" value, simply show a less than message.
+	if inSeconds == 0 {
+		result = "< " + plural(int(roundToMinutes), "minute")
 	} else {
-		result = plural(int(seconds), "second")
+		// The duration is greater than zero, so process it.
+		years := math.Floor(float64(inSeconds) / 60 / 60 / 24 / 7 / 30 / 12)
+		seconds := inSeconds % (60 * 60 * 24 * 7 * 30 * 12)
+		months := math.Floor(float64(seconds) / 60 / 60 / 24 / 7 / 30)
+		seconds = inSeconds % (60 * 60 * 24 * 7 * 30)
+		weeks := math.Floor(float64(seconds) / 60 / 60 / 24 / 7)
+		seconds = inSeconds % (60 * 60 * 24 * 7)
+		days := math.Floor(float64(seconds) / 60 / 60 / 24)
+		seconds = inSeconds % (60 * 60 * 24)
+		hours := math.Floor(float64(seconds) / 60 / 60)
+		seconds = inSeconds % (60 * 60)
+		minutes := math.Floor(float64(seconds) / 60)
+		seconds = inSeconds % 60
+
+		if years > 0 {
+			result = plural(int(years), "year") + plural(int(months), "month") + plural(int(weeks), "week") + plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
+		} else if months > 0 {
+			result = plural(int(months), "month") + plural(int(weeks), "week") + plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
+		} else if weeks > 0 {
+			result = plural(int(weeks), "week") + plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
+		} else if days > 0 {
+			result = plural(int(days), "day") + plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
+		} else if hours > 0 {
+			result = plural(int(hours), "hour") + plural(int(minutes), "minute") + plural(int(seconds), "second")
+		} else if minutes > 0 {
+			result = plural(int(minutes), "minute") + plural(int(seconds), "second")
+		} else {
+			result = plural(int(seconds), "second")
+		}
 	}
 
 	return stringUtils.Trim(result)
