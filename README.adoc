@@ -1,5 +1,5 @@
 image:https://img.shields.io/github/v/release/jlanzarotta/timetracker[GitHub Release]
-image:https://img.shields.io/github/v/release/jlanzarotta/timetracker/total[Total]
+image:https://img.shields.io/github/downloads/jlanzarotta/timetracker/total[GitHub Downloads (all assets, all releases)]
 
 = Time Tracker
 :toc: left
