@@ -322,7 +322,7 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 	var consolidateByTask map[string]models.Task = make(map[string]models.Task)
 	for _, e := range entries {
 		if strings.EqualFold(e.Project, constants.HELLO) {
-			continue;
+			continue
 		} else {
 			consolidated, found := consolidateByTask[e.Value.String]
 			if found {
@@ -332,7 +332,7 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 				var task models.Task = models.NewTask(e.Value.String)
 				task.Duration = durations[e.Uid].Duration
 				task.AddTaskProperty(constants.PROJECT, e.Project)
-				consolidateByTask[e.Value.String] = task;
+				consolidateByTask[e.Value.String] = task
 			}
 		}
 	}
@@ -349,6 +349,9 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 
 	// Render the table.
 	fmt.Println(t.Render())
+}
+
+func reportByToday(durations map[int64]models.UID, entries []database.Entry) {
 }
 
 func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []database.Entry) {
@@ -394,12 +397,12 @@ func runReport(cmd *cobra.Command, args []string) {
 	// See if the user asked to override round.  If no, use the rounding value
 	// from the configuration file.  Otherwise, set the rounding value to 0.
 	noRounding, _ := cmd.Flags().GetBool("no-rounding")
-	if (!noRounding) {
+	if !noRounding {
 		roundToMinutes = viper.GetInt64(constants.ROUND_TO_MINUTES)
 	} else {
 		roundToMinutes = 0
 	}
-		
+
 	currentWeek, _ := cmd.Flags().GetBool("current-week")
 	previousWeek, _ := cmd.Flags().GetBool("previous-week")
 	lastEntry, _ := cmd.Flags().GetBool("last-entry")
@@ -424,8 +427,9 @@ func runReport(cmd *cobra.Command, args []string) {
 		start = carbon.Parse(fromDateStr)
 		end = carbon.Parse(toDateStr)
 	} else {
-		reportByLastEntry()
-		os.Exit(0)
+		// Report for today.
+		start = carbon.Now().StartOfDay()
+		end = carbon.Now().EndOfDay()
 	}
 
 	var startWeek int = start.WeekOfYear()
