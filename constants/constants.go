@@ -9,6 +9,7 @@ const DATE_FORMAT string = "2006-01-02" // WTF golang?  Why this date format?
 const EMPTY string = ""
 const HELLO string = "***hello"
 const NATURAL_LANGUAGE_DESCRIPTION string = "Natural Language Time, e.g., '18 minutes ago'"
+const NOTE_DESCRIPTION string = "A note associated with this entry"
 const PRINT_DATE_WIDTH int = 10
 const PRINT_DURATION_WIDTH int = 38
 const PRINT_NOTE_WIDTH int = 40

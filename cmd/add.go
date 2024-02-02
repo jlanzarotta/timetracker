@@ -27,13 +27,14 @@ var addCmd = &cobra.Command{
 	Args:  cobra.MaximumNArgs(1),
 	Short: "Add a completed task",
 	Long: `Once you have completed a task, use this command to add that newly
-completed task to the database`,
+completed task to the database with an optional note`,
 	Run: func(cmd *cobra.Command, args []string) {
 		runAdd(cmd, args)
 	},
 }
 
 var favorite int
+var note string
 
 func getFavorite(index int) string {
 	if index < 0 {
@@ -41,25 +42,26 @@ func getFavorite(index int) string {
 		os.Exit(1)
 	}
 
-    data, err := os.ReadFile(viper.ConfigFileUsed())
-    if err != nil {
-        log.Fatalf("Error reading configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
-        os.Exit(1)
-    }
+	data, err := os.ReadFile(viper.ConfigFileUsed())
+	if err != nil {
+		log.Fatalf("Error reading configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
+		os.Exit(1)
+	}
 
-    var config Configuration
+	var config Configuration
 
-    err = yaml.Unmarshal(data, &config)
-    if err != nil {
-        log.Fatalf("Error unmarshalling configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
-        os.Exit(1)
-    }
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		log.Fatalf("Error unmarshalling configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
+		os.Exit(1)
+	}
 
 	return config.Favorites[index].Favorite
 }
 
 func init() {
 	addCmd.Flags().StringVarP(&at, "at", constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
+	addCmd.Flags().StringVarP(&note, "note", constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
 	addCmd.Flags().IntVarP(&favorite, "favorite", constants.EMPTY, -1, "Favorite")
 	rootCmd.AddCommand(addCmd)
 
@@ -117,7 +119,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 	}
 
 	// Create a new Entry.
-	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, pieces[0], constants.EMPTY, addTime.ToRfc3339String())
+	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, pieces[0], note, addTime.ToRfc3339String())
 
 	// Populate the newly created Entry with its tasks.
 	for i := 1; i < len(pieces); i += 1 {
