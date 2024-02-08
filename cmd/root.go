@@ -137,6 +137,10 @@ func initConfig() {
 	// Set debug to false.
 	viper.SetDefault("debug", false)
 
+	// Should a daily total be shown for each day when rendering the "by day"
+	// report.
+	viper.SetDefault("show_by_day_totals", true)
+
 	// Read the configuration file.
 	err = viper.ReadInConfig()
 	if err != nil {

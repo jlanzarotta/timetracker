@@ -107,6 +107,7 @@ func plural(count int, singular string) (result string) {
 }
 
 func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
+	var show_by_day_totals bool = viper.GetBool(constants.SHOW_BY_DAY_TOTALS)
 	log.Printf("\n")
 	log.Printf("%s\n", dashes(" By Day "))
 	log.Printf("\n")
@@ -117,6 +118,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 		if strings.EqualFold(e.Project, constants.HELLO) {
 			continue
 		}
+
 		consolidatedDay, found := consolidatedByDay[carbon.Parse(e.EntryDatetime).Format(constants.CARBON_DATE_FORMAT)]
 		if found {
 			consolidatedProject, found := consolidatedDay[e.Project]
@@ -165,17 +167,26 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
-	// t.SetStyle(table.StyleColoredBright)
-	// t.SetStyle(table.StyleColoredBlackOnGreenWhite)
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Date", "Duration", "Project", "Task(s)"})
+	//t.AppendHeader(table.Row{"Date", "Duration", "Project", "Task(s)"})
+	t.AppendHeader(table.Row{"Date", "Project", "Task(s)", "Duration"})
 
 	// Add each row to the table.
 	for _, i := range sortedKeys {
 		var day map[string]models.Entry = consolidatedByDay[i]
+		var totalPerDay int64 = 0
 
 		for p, v := range day {
-			t.AppendRow(table.Row{i, secondsToHuman(round(v.Duration)), p, v.GetTasksAsString()})
+			//t.AppendRow(table.Row{i, secondsToHuman(round(v.Duration)), p, v.GetTasksAsString()})
+			t.AppendRow(table.Row{i, p, v.GetTasksAsString(), secondsToHuman(round(v.Duration))})
+			totalPerDay += round(v.Duration)
+		}
+
+		if show_by_day_totals {
+			t.AppendSeparator()
+			//t.AppendRow(table.Row{"Total", secondsToHMS(totalPerDay), "", ""})
+			t.AppendRow(table.Row{"", "", "Total", secondsToHMS(totalPerDay)})
+			t.AppendSeparator()
 		}
 	}
 
@@ -221,7 +232,8 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Duration", "Date", "Start-End", "Project", "Task", "Note"})
+	//t.AppendHeader(table.Row{"Duration", "Date", "Start-End", "Project", "Task", "Note"})
+	t.AppendHeader(table.Row{"Date", "Start-End", "Duration", "Project", "Task", "Note"})
 
 	// Add all the consolidated rows to the table.
 	for _, i := range sortedKeys {
@@ -229,10 +241,18 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 
 		// Skip entries that match constants.HELLO.
 		if !strings.EqualFold(entry.Project, constants.HELLO) {
+//			t.AppendRow(table.Row{
+//				secondsToHuman(round(entry.Duration)),
+//				carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_DATE_FORMAT),
+//				carbon.Parse(entry.EntryDatetime).SubSeconds(int(entry.Duration)).Format(constants.CARBON_START_END_TIME_FORMAT) + " to " + carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_START_END_TIME_FORMAT),
+//				entry.Project,
+//				entry.GetTasksAsString(),
+//				entry.Note})
+
 			t.AppendRow(table.Row{
-				secondsToHuman(round(entry.Duration)),
 				carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_DATE_FORMAT),
 				carbon.Parse(entry.EntryDatetime).SubSeconds(int(entry.Duration)).Format(constants.CARBON_START_END_TIME_FORMAT) + " to " + carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_START_END_TIME_FORMAT),
+				secondsToHuman(round(entry.Duration)),
 				entry.Project,
 				entry.GetTasksAsString(),
 				entry.Note})
@@ -298,7 +318,8 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Duration", "Project", "Task(s)"})
+	//t.AppendHeader(table.Row{"Duration", "Project", "Task(s)"})
+	t.AppendHeader(table.Row{"Project", "Task", "Duration"})
 
 	// Add all the consolidated rows to the table.
 	for _, i := range sortedKeys {
@@ -306,7 +327,8 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 
 		// Skip entries that match constants.HELLO.
 		if !strings.EqualFold(entry.Project, constants.HELLO) {
-			t.AppendRow(table.Row{secondsToHuman(round(entry.Duration)), entry.Project, entry.GetTasksAsString()})
+			//t.AppendRow(table.Row{secondsToHuman(round(entry.Duration)), entry.Project, entry.GetTasksAsString()})
+			t.AppendRow(table.Row{entry.Project, entry.GetTasksAsString(), secondsToHuman(round(entry.Duration))})
 		}
 	}
 
@@ -340,18 +362,17 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Duration", "Task(s)", "Project(s)"})
+	//t.AppendHeader(table.Row{"Duration", "Task(s)", "Project(s)"})
+	t.AppendHeader(table.Row{"Task(s)", "Project(s)", "Duration"})
 
 	// Populate the table.
 	for _, v := range consolidateByTask {
-		t.AppendRow(table.Row{secondsToHuman(round(v.Duration)), v.Task, v.GetProjectsAsString()})
+		//t.AppendRow(table.Row{secondsToHuman(round(v.Duration)), v.Task, v.GetProjectsAsString()})
+		t.AppendRow(table.Row{v.Task, v.GetProjectsAsString(), secondsToHuman(round(v.Duration))})
 	}
 
 	// Render the table.
 	fmt.Println(t.Render())
-}
-
-func reportByToday(durations map[int64]models.UID, entries []database.Entry) {
 }
 
 func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []database.Entry) {
@@ -371,7 +392,20 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 	}
 
 	log.Printf("\n")
-	log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(round(totalWorkDuration)), secondsToHMS(round(totalWorkDuration)))
+
+	// If we have worked more seconds than are in a day, we need to show hours,
+	// minutes, and seconds as well as the human readable form of the duration.
+	// By showing the hours, minutes, and seconds, we have a better
+	// representation of our duration.  For example... traditionally, a person
+	// works 40 hours a week.  If the report tells us we worked 1 day and 3
+	// hours... we have to convert that in our heads to 27 hours... But if the
+	// report simply did the converation for us... that is much better.
+	if totalWorkDuration > constants.SECONDS_PER_DAY {
+		log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(round(totalWorkDuration)), secondsToHMS(round(totalWorkDuration)))
+	} else {
+		log.Printf("Total Working Time: %s\n", secondsToHuman(round(totalWorkDuration)))
+	}
+
 	log.Printf("  Total Break Time: %s\n", secondsToHuman(round(totalBreakDuration)))
 }
 
