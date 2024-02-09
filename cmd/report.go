@@ -168,7 +168,6 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	//t.AppendHeader(table.Row{"Date", "Duration", "Project", "Task(s)"})
 	t.AppendHeader(table.Row{"Date", "Project", "Task(s)", "Duration"})
 
 	// Add each row to the table.
@@ -177,14 +176,12 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 		var totalPerDay int64 = 0
 
 		for p, v := range day {
-			//t.AppendRow(table.Row{i, secondsToHuman(round(v.Duration)), p, v.GetTasksAsString()})
 			t.AppendRow(table.Row{i, p, v.GetTasksAsString(), secondsToHuman(round(v.Duration))})
 			totalPerDay += round(v.Duration)
 		}
 
 		if show_by_day_totals {
 			t.AppendSeparator()
-			//t.AppendRow(table.Row{"Total", secondsToHMS(totalPerDay), "", ""})
 			t.AppendRow(table.Row{"", "", "Total", secondsToHMS(totalPerDay)})
 			t.AppendSeparator()
 		}
@@ -232,7 +229,6 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	//t.AppendHeader(table.Row{"Duration", "Date", "Start-End", "Project", "Task", "Note"})
 	t.AppendHeader(table.Row{"Date", "Start-End", "Duration", "Project", "Task", "Note"})
 
 	// Add all the consolidated rows to the table.
@@ -241,14 +237,6 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 
 		// Skip entries that match constants.HELLO.
 		if !strings.EqualFold(entry.Project, constants.HELLO) {
-//			t.AppendRow(table.Row{
-//				secondsToHuman(round(entry.Duration)),
-//				carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_DATE_FORMAT),
-//				carbon.Parse(entry.EntryDatetime).SubSeconds(int(entry.Duration)).Format(constants.CARBON_START_END_TIME_FORMAT) + " to " + carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_START_END_TIME_FORMAT),
-//				entry.Project,
-//				entry.GetTasksAsString(),
-//				entry.Note})
-
 			t.AppendRow(table.Row{
 				carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_DATE_FORMAT),
 				carbon.Parse(entry.EntryDatetime).SubSeconds(int(entry.Duration)).Format(constants.CARBON_START_END_TIME_FORMAT) + " to " + carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_START_END_TIME_FORMAT),
@@ -318,7 +306,6 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	//t.AppendHeader(table.Row{"Duration", "Project", "Task(s)"})
 	t.AppendHeader(table.Row{"Project", "Task", "Duration"})
 
 	// Add all the consolidated rows to the table.
@@ -327,7 +314,6 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 
 		// Skip entries that match constants.HELLO.
 		if !strings.EqualFold(entry.Project, constants.HELLO) {
-			//t.AppendRow(table.Row{secondsToHuman(round(entry.Duration)), entry.Project, entry.GetTasksAsString()})
 			t.AppendRow(table.Row{entry.Project, entry.GetTasksAsString(), secondsToHuman(round(entry.Duration))})
 		}
 	}
@@ -362,12 +348,10 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	//t.AppendHeader(table.Row{"Duration", "Task(s)", "Project(s)"})
 	t.AppendHeader(table.Row{"Task(s)", "Project(s)", "Duration"})
 
 	// Populate the table.
 	for _, v := range consolidateByTask {
-		//t.AppendRow(table.Row{secondsToHuman(round(v.Duration)), v.Task, v.GetProjectsAsString()})
 		t.AppendRow(table.Row{v.Task, v.GetProjectsAsString(), secondsToHuman(round(v.Duration))})
 	}
 
