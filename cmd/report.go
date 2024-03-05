@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 Jeff Lanzarotta
+Copyright © 2024 Jeff Lanzarotta
 */
 package cmd
 
@@ -176,7 +176,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 		var totalPerDay int64 = 0
 
 		for p, v := range day {
-			t.AppendRow(table.Row{i, p, v.GetTasksAsString(), secondsToHuman(round(v.Duration))})
+			t.AppendRow(table.Row{i, p, v.GetTasksAsString(), secondsToHuman(v.Duration)})
 			totalPerDay += round(v.Duration)
 		}
 
@@ -240,7 +240,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 			t.AppendRow(table.Row{
 				carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_DATE_FORMAT),
 				carbon.Parse(entry.EntryDatetime).SubSeconds(int(entry.Duration)).Format(constants.CARBON_START_END_TIME_FORMAT) + " to " + carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_START_END_TIME_FORMAT),
-				secondsToHuman(round(entry.Duration)),
+				secondsToHuman(entry.Duration),
 				entry.Project,
 				entry.GetTasksAsString(),
 				entry.Note})
@@ -280,7 +280,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 			// If the Uid changes, add the new duration.
 			if consolidated.Uid != e.Uid {
 				consolidated.Uid = e.Uid
-				consolidated.Duration += durations[e.Uid].Duration
+				consolidated.Duration += round(durations[e.Uid].Duration)
 			}
 
 			// Add the consolidated object to the collection.
@@ -314,7 +314,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 
 		// Skip entries that match constants.HELLO.
 		if !strings.EqualFold(entry.Project, constants.HELLO) {
-			t.AppendRow(table.Row{entry.Project, entry.GetTasksAsString(), secondsToHuman(round(entry.Duration))})
+			t.AppendRow(table.Row{entry.Project, entry.GetTasksAsString(), secondsToHuman(entry.Duration)})
 		}
 	}
 
@@ -334,7 +334,7 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 		} else {
 			consolidated, found := consolidateByTask[e.Value.String]
 			if found {
-				consolidated.Duration += durations[e.Uid].Duration
+				consolidated.Duration += round(durations[e.Uid].Duration)
 				consolidateByTask[e.Value.String] = consolidated
 			} else {
 				var task models.Task = models.NewTask(e.Value.String)
@@ -352,7 +352,7 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 
 	// Populate the table.
 	for _, v := range consolidateByTask {
-		t.AppendRow(table.Row{v.Task, v.GetProjectsAsString(), secondsToHuman(round(v.Duration))})
+		t.AppendRow(table.Row{v.Task, v.GetProjectsAsString(), secondsToHuman(v.Duration)})
 	}
 
 	// Render the table.
@@ -369,9 +369,9 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 		if strings.EqualFold(e.Project, constants.HELLO) {
 			continue
 		} else if strings.EqualFold(e.Project, constants.BREAK) {
-			totalBreakDuration += durations[e.Uid].Duration
+			totalBreakDuration += round(durations[e.Uid].Duration)
 		} else {
-			totalWorkDuration += durations[e.Uid].Duration
+			totalWorkDuration += round(durations[e.Uid].Duration)
 		}
 	}
 
@@ -385,12 +385,12 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 	// hours... we have to convert that in our heads to 27 hours... But if the
 	// report simply did the converation for us... that is much better.
 	if totalWorkDuration > constants.SECONDS_PER_DAY {
-		log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(round(totalWorkDuration)), secondsToHMS(round(totalWorkDuration)))
+		log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(totalWorkDuration), secondsToHMS(totalWorkDuration))
 	} else {
-		log.Printf("Total Working Time: %s\n", secondsToHuman(round(totalWorkDuration)))
+		log.Printf("Total Working Time: %s\n", secondsToHuman(totalWorkDuration))
 	}
 
-	log.Printf("  Total Break Time: %s\n", secondsToHuman(round(totalBreakDuration)))
+	log.Printf("  Total Break Time: %s\n", secondsToHuman(totalBreakDuration))
 }
 
 func round(durationInSeconds int64) (result int64) {
