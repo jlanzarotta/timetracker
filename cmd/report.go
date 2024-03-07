@@ -134,7 +134,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 				consolidatedByDay[carbon.Parse(e.EntryDatetime).Format(constants.CARBON_DATE_FORMAT)][e.Project] = consolidatedProject
 			} else {
 				var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
-				entry.Duration = durations[e.Uid].Duration
+				entry.Duration = round(durations[e.Uid].Duration)
 				if e.Name.Valid {
 					entry.AddEntryProperty(e.Name.String, e.Value.String)
 				}
@@ -145,7 +145,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 		} else {
 			// Since the EntryDatetime was not found, add it.
 			var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
-			entry.Duration = durations[e.Uid].Duration
+			entry.Duration = round(durations[e.Uid].Duration)
 			if e.Name.Valid {
 				entry.AddEntryProperty(e.Name.String, e.Value.String)
 			}
@@ -210,7 +210,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 			consolidatedByUid[e.Uid] = consolidated
 		} else {
 			var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
-			entry.Duration = durations[e.Uid].Duration
+			entry.Duration = round(durations[e.Uid].Duration)
 			if e.Name.Valid {
 				entry.AddEntryProperty(e.Name.String, e.Value.String)
 			}
@@ -287,7 +287,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 			consolidatedByProject[e.Project] = consolidated
 		} else {
 			var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
-			entry.Duration = durations[e.Uid].Duration
+			entry.Duration = round(durations[e.Uid].Duration)
 			if e.Name.Valid {
 				entry.AddEntryProperty(e.Name.String, e.Value.String)
 			}
@@ -338,7 +338,7 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 				consolidateByTask[e.Value.String] = consolidated
 			} else {
 				var task models.Task = models.NewTask(e.Value.String)
-				task.Duration = durations[e.Uid].Duration
+				task.Duration = round(durations[e.Uid].Duration)
 				task.AddTaskProperty(constants.PROJECT, e.Project)
 				consolidateByTask[e.Value.String] = task
 			}
