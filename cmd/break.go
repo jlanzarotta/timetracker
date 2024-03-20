@@ -31,6 +31,7 @@ to the database.`,
 
 func init() {
 	breakCmd.Flags().StringVarP(&at, "at", constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
+	breakCmd.Flags().StringVarP(&note, "note", constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
 	rootCmd.AddCommand(breakCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -63,7 +64,8 @@ func runBreak(cmd *cobra.Command, args []string) {
 	}
 
 	// Create a new Entry.
-	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, constants.BREAK, constants.EMPTY, breakTime.ToRfc3339String())
+	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, constants.BREAK, note,
+		breakTime.ToRfc3339String())
 
 	log.Printf("Adding %s\n", entry.Dump())
 

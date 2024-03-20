@@ -34,7 +34,6 @@ completed task to the database with an optional note`,
 }
 
 var favorite int
-var note string
 
 func getFavorite(index int) string {
 	if index < 0 {
@@ -119,7 +118,8 @@ func runAdd(cmd *cobra.Command, args []string) {
 	}
 
 	// Create a new Entry.
-	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, pieces[0], note, addTime.ToRfc3339String())
+	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, pieces[0], note,
+		addTime.ToRfc3339String())
 
 	// Populate the newly created Entry with its tasks.
 	for i := 1; i < len(pieces); i += 1 {
