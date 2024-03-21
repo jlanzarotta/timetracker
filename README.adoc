@@ -89,13 +89,13 @@ $ tt add timetracker+programming+documentation
 
 The previous command tells Time Tracker that you just finished working on the project(timetracker) and the task(programming and documentation).
 
-==== comment
+==== note
 
-The `comment` command tells Time Tracker that you would like to add a comment associated with your new entry.
+The `note` command tells Time Tracker that you would like to add a note associated with your new entry.
 
 [source, shell]
 ----
-$ tt add timetracker+programming --comment "I love programming."
+$ tt add timetracker+programming --note "I love programming."
 ----
 
 ==== favorite
@@ -139,6 +139,15 @@ $ tt break lunch
 ----
 
 The previous command tells Time Tracker that you just finished your lunch break.
+
+==== note
+
+The `note` command tells Time Tracker that you would like to add a note associated with your new break.
+
+[source, shell]
+----
+$ tt break --note "Went to the doctor."
+----
 
 === edit
 
