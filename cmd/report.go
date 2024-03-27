@@ -384,13 +384,22 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 	// works 40 hours a week.  If the report tells us we worked 1 day and 3
 	// hours... we have to convert that in our heads to 27 hours... But if the
 	// report simply did the converation for us... that is much better.
-	if totalWorkDuration > constants.SECONDS_PER_DAY {
-		log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(totalWorkDuration), secondsToHMS(totalWorkDuration))
-	} else {
-		log.Printf("Total Working Time: %s\n", secondsToHuman(totalWorkDuration))
-	}
+	if viper.GetBool(constants.SPLIT_WORK_FROM_BREAK_TIME) {
+		if totalWorkDuration > constants.SECONDS_PER_DAY {
+			log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(totalWorkDuration), secondsToHMS(totalWorkDuration))
+		} else {
+			log.Printf("Total Working Time: %s\n", secondsToHuman(totalWorkDuration))
+		}
 
-	log.Printf("  Total Break Time: %s\n", secondsToHuman(totalBreakDuration))
+		log.Printf("  Total Break Time: %s\n", secondsToHuman(totalBreakDuration))
+	} else {
+		var total = totalWorkDuration + totalBreakDuration
+		if totalWorkDuration > constants.SECONDS_PER_DAY {
+			log.Printf("Total Time: %s (%s)\n", secondsToHuman(total), secondsToHMS(total))
+		} else {
+			log.Printf("Total Time: %s\n", secondsToHuman(total))
+		}
+	}
 }
 
 func round(durationInSeconds int64) (result int64) {

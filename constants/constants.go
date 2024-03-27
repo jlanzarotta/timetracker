@@ -24,6 +24,7 @@ const REPORT_CARBON_TO_FROM_FORMAT string = "Y-M-d"
 const ROUND_TO_MINUTES string = "round_to_minutes"
 const SECONDS_PER_DAY = 86400
 const SHOW_BY_DAY_TOTALS string = "show_by_day_totals"
+const SPLIT_WORK_FROM_BREAK_TIME string = "split_work_from_break_time"
 const TASK string = "task"
 const TASK_DELIMITER string = "+"
 const UNKNOWN_UID int64 = -1

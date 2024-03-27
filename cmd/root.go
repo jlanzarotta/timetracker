@@ -138,6 +138,9 @@ func initConfig() {
 	// Set debug to false.
 	viper.SetDefault("debug", false)
 
+	// Set flag indicating if work and break time should be spit into seperate values during reports.
+	viper.SetDefault("split_work_from_break_time", false)
+
 	// Should a daily total be shown for each day when rendering the "by day"
 	// report.
 	viper.SetDefault("show_by_day_totals", true)
@@ -160,6 +163,7 @@ func initConfig() {
 	if viper.GetBool("debug") {
 		log.Printf("%s = [%s]\n", constants.WEEK_START, viper.GetString(constants.WEEK_START))
 		log.Printf("%s = [%d]\n", constants.ROUND_TO_MINUTES, viper.GetInt64(constants.ROUND_TO_MINUTES))
+		log.Printf("%s = [%v]\n", constants.SPLIT_WORK_FROM_BREAK_TIME, viper.GetBool(constants.SPLIT_WORK_FROM_BREAK_TIME))
 	}
 
 	// Check if the database exists or not.  If it does not, create it.
