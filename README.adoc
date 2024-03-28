@@ -100,7 +100,7 @@ $ tt add timetracker+programming --note "I love programming."
 
 ==== favorite
 
-The `favorite` command tells Time Tracker that you would like to use one of your preconfigured favorite project/task combinations.  These favorites are stored in the _timetracker.yaml_ file which is located in the installation directory.  By default, there are 5 preconfigured favorites; however, you can add as many as you would like.
+The `favorite` command tells Time Tracker that you would like to use one of your preconfigured favorite project/task combinations.  These favorites are stored in the _.timetracker.yaml_ file which is located in the installation directory.  By default, there are 5 preconfigured favorites; however, you can add as many as you would like.
 
 NOTE: Favorites are zero (0) based.
 
@@ -125,7 +125,7 @@ $ tt add --favorite 0
 Adding Project[general] Task[training] Date[2023-12-07T14:10:02-05:00]
 ----
 
-The previous command tells Time Tracker that you just finished working on the favorite referenced by the number '0'.  If we look in our _timetracker.yaml_ file for the '0' favorite, we find that it references the 'project1+task1' combination.  With that, 'project1+task1' would be automatically logged as being completed.
+The previous command tells Time Tracker that you just finished working on the favorite referenced by the number '0'.  If we look in our _.timetracker.yaml_ file for the '0' favorite, we find that it references the 'project1+task1' combination.  With that, 'project1+task1' would be automatically logged as being completed.
 
 TIP: Configuring and using favorites, help improve consistency as well as improves speed of entering frequently used project/task combinations.
 
@@ -159,7 +159,7 @@ The `show` command tells Time Tracker you would like to show various information
 
 ==== favorites
 
-The `favorites` command tells Time Tracker that you would like to show all your currently configured favorites that are stored in the _timetracker.yaml_ file which is located in the installation directory.
+The `favorites` command tells Time Tracker that you would like to show all your currently configured favorites that are stored in the _.timetracker.yaml_ file which is located in the installation directory.
 
 [source, shell]
 ----
@@ -255,8 +255,44 @@ In the below example, the latest entry to 05-Dec-2023...  Time Tracker will as y
 ----
 $ tt stretch 
 Would you like to stretch Project[***hello] to Tuesday, 05-Dec-2023 13:48:32 EST? (Y/N (yes/no)) yes
-Last entry was stretched.                                                                           
+Last entry was stretched.             
 ----
+
+== Configuration File
+
+When Time Tracker starts up, it checks to make sure there is a default configuration file in the default directory.  If the files does not exist, it is automatically crated.
+
+For Microsoft Windows(R), the default directory is `%USERPROFILE%`, while under Unix (FreeBSD(R), Linux, macOS(R), etc.) the directory is `$HOME`.
+
+=== Default Configuration
+
+The default Microsoft Windows(R) Time Tracker configuration is as follows.  These configuration options can be modified by the user after installation.
+
+[source, yaml]
+----
+database_file: %USERPROFILE%\.timetracker.db <1>
+debug: false <2>
+require_note: false <3>
+round_to_minutes: 15 <4>
+week_start: Sunday <5>
+show_by_day_totals: true <6>
+split_work_from_break_time: false <7>
+favorites: <8>
+  - favorite: general+training
+  - favorite: general+product development
+  - favorite: general+personal time
+  - favorite: general+holiday
+  - favorite: general+vacation/PTO/Comp
+----
+
+<1> The database file used by Time Tracker.  Default is `.timetracker.db`.
+<2> If debug type information should be printed to the screen or not.  Default is `false`.
+<3> If a note is required when entering a new entry into Time Tracker.  Default is `false`.
+<4> The number of minutes to round up or down to when running reports.  This makes is easy to report on a consistent time "buckets".
+<5> The day used to indicate the start of the week.  Some company's week start on Saturday, some on Sunday.  This allows to to change that start day to fit your needs.  The default is `Sunday`.
+<6> Should a daily total be shown for each day when rendering the "by day" report.  Default is `true`.
+<7> Indicates if work and break time should be split into seperate values during reports or not.  The default is `false`.
+<8> The list of favorites.
 
 == Copyright and License
 
