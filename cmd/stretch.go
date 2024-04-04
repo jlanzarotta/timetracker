@@ -22,8 +22,8 @@ import (
 // stretchCmd represents the add command
 var stretchCmd = &cobra.Command{
 	Use:   "stretch last project",
-	Short: "Stretch the lastest entry",
-	Long:  "Stretch the lastest entry to 'now' or the whatever is specified using the 'at' flag command",
+	Short: "Stretch the latest entry",
+	Long:  "Stretch the latest entry to 'now' or the whatever is specified using the 'at' flag command",
 	Run: func(cmd *cobra.Command, args []string) {
 		runStretch(cmd, args)
 	},
@@ -34,7 +34,7 @@ func init() {
 	rootCmd.AddCommand(stretchCmd)
 }
 
-func runStretch(cmd *cobra.Command, args []string) {
+func runStretch(cmd *cobra.Command, _ []string) {
 	// Get the current date/time.
 	var stretchTime carbon.Carbon = carbon.Now()
 

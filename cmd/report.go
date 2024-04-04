@@ -417,7 +417,7 @@ func round(durationInSeconds int64) (result int64) {
 	return (seconds)
 }
 
-func runReport(cmd *cobra.Command, args []string) {
+func runReport(cmd *cobra.Command, _ []string) {
 	var start carbon.Carbon
 	var end carbon.Carbon
 

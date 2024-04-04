@@ -24,7 +24,7 @@ func init() {
 	rootCmd.AddCommand(backendCmd)
 }
 
-func runBackend(args []string) {
+func runBackend(_ []string) {
 	cmd := exec.Command("sqlite3", viper.GetString("database_file"))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

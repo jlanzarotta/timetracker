@@ -24,7 +24,7 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 }
 
-func runVersion(cmd *cobra.Command, args []string) {
+func runVersion(_ *cobra.Command, _ []string) {
 	log.Printf("  Version: " + BuildVersion + "\n" +
 		"Copyright: (c) 2018-" + time.Now().Format("2006") +
 		" Jeff Lanzarotta, All rights reserved\n  Born on: " + BuildDateTime + "\n")

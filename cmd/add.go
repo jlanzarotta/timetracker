@@ -95,7 +95,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 
 	var projectTask string = constants.EMPTY
 
-	// If a project+tast was passed in, use that project+task combination.  If it was not, see if a
+	// If a project+task was passed in, use that project+task combination.  If it was not, see if a
 	// favorite was passed in.
 	if len(args) > 0 {
 		projectTask = args[0]

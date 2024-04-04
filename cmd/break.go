@@ -45,7 +45,7 @@ func init() {
 	// breakCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func runBreak(cmd *cobra.Command, args []string) {
+func runBreak(cmd *cobra.Command, _ []string) {
 	// Get the current date/time.
 	var breakTime carbon.Carbon = carbon.Now()
 

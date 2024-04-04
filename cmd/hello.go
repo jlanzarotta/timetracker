@@ -26,7 +26,7 @@ var at string
 var helloCmd = &cobra.Command{
 	Use:   "hello",
 	Short: "Start time tracking for the day",
-	Long: `In order to have timetrack start tracking time is to run this
+	Long: `In order to have timetracker start tracking time is to run this
 command.  It informs timetracker that you would like it to start tracking
 your time.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -63,7 +63,7 @@ func greetings(c carbon.Carbon) string {
 	return value
 }
 
-func runHello(cmd *cobra.Command, args []string) {
+func runHello(cmd *cobra.Command, _ []string) {
 	// Get the current date/time.
 	var helloTime carbon.Carbon = carbon.Now()
 

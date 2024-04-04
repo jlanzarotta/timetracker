@@ -51,7 +51,7 @@ func init() {
     // showCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func runShow(cmd *cobra.Command, args []string) {
+func runShow(cmd *cobra.Command, _ []string) {
     // Get the --favorites flag.
 	favorites, _ := cmd.Flags().GetBool("favorites")
 
