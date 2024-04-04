@@ -175,6 +175,32 @@ Favorite 4: [general+vacation/PTO/Comp]
 
 The `report` command tells Time Tracker you would like to run a report on your activities.  By default, you get the current days activities.
 
+A couple of things you will notice when you run a report is, first, the header.
+
+[source, shell]
+----
+------------ 2024-04-04 00:00:00(14) to 2024-04-04 23:59:59(14) -----------
+----
+
+The report header tell you that start and end date/time of the report as well as the week number in parentheses.
+
+Secondly, you will see the _Total Time_.  The _Total Time_ can be in two formats, which is controlled by the `split_work_from_break_time` configuration option.
+
+If `split_work_from_break_time` is set to `false`, you will get a combined _Total Time_...
+
+[source, shell]
+----
+Total Time: 3 hours 45 minutes 0 second
+----
+
+If `split_work_from_break_time` is set to `false`, you will get a split _Total Time_...
+
+[source, shell]
+----
+Total Working Time: 3 hours 30 minutes 0 second
+Total Break Time: 15 minutes
+----
+
 ==== Options
 
 The `report` command had several handy options what allow you to customize what needs to be reported.
