@@ -210,7 +210,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 			consolidatedByUid[e.Uid] = consolidated
 		} else {
 			var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
-			entry.Duration = round(durations[e.Uid].Duration)
+			entry.Duration = durations[e.Uid].Duration
 			if e.Name.Valid {
 				entry.AddEntryProperty(e.Name.String, e.Value.String)
 			}
@@ -240,7 +240,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 			t.AppendRow(table.Row{
 				carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_DATE_FORMAT),
 				carbon.Parse(entry.EntryDatetime).SubSeconds(int(entry.Duration)).Format(constants.CARBON_START_END_TIME_FORMAT) + " to " + carbon.Parse(entry.EntryDatetime).Format(constants.CARBON_START_END_TIME_FORMAT),
-				secondsToHuman(entry.Duration),
+				secondsToHuman(round(entry.Duration)),
 				entry.Project,
 				entry.GetTasksAsString(),
 				entry.Note})
