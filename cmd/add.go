@@ -126,7 +126,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 		entry.AddEntryProperty(constants.TASK, pieces[i])
 	}
 
-	log.Printf("Adding %s\n", entry.Dump())
+	log.Printf("Adding %s\n", entry.Dump(false))
 
 	// Write the new Entry to the database.
 	db := database.New(viper.GetString(constants.DATABASE_FILE))

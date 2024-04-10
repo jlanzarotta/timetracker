@@ -16,6 +16,9 @@
             "64bit": {
                 "url": "https://github.com/jlanzarotta/timetracker/releases/download/$version/timetracker_Windows_x86_64.zip",
             }
+        },
+        "hash": {
+            "url": "$baseurl/checksums.txt"
         }
     }
 }

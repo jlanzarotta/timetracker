@@ -129,6 +129,37 @@ The previous command tells Time Tracker that you just finished working on the fa
 
 TIP: Configuring and using favorites, help improve consistency as well as improves speed of entering frequently used project/task combinations.
 
+=== amend
+
+The `amend` command tells Time Tracker that you are wanting to modify the most recent entry's information.  You are prompted to modify each of the entry's properties and then asked to validate those modifications before they are committed to the database.
+
+IMPORTANT: The Date/Time must be in ISO8601 format. https://en.wikipedia.org/wiki/ISO_8601
+
+[source, shell]
+----
+$ tt amend
+Amending...
+
+Project[proj-001]
+   Task[meeting]
+   Note[CRP with customer.]
+   Date[2024-04-10T10:32:24-04:00]
+
+Enter Project (empty for no change) [proj-001] : proj-002
+Enter Task (empty for no change) [meeting] :
+Enter Note (empty for no change) [CRP with customer.] :
+Enter Date Time (empty for no change) [2024-04-10T10:32:24-04:00] : 2024-04-10T10:302:00-00:00
+
+          | OLD                       | NEW
+----------+---------------------------+---------------------------
+ Project  | proj-001                  | proj-002
+ Task     | meeting                   | meeting
+ Note     | CRP with customer.        | CRP with customer.
+ Datetime | 2024-04-10T10:32:24-04:00 | 2024-04-10T10:30:00-00:00
+
+Commit these changes? (Y/N (yes/no))
+----
+
 === break
 
 The `break` command tells Time Tracker that you are going went on a break.  The time associated with breaks are not added to your daily work time.  They are consider under the break classification when doing a `report'.

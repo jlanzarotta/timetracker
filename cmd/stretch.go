@@ -72,9 +72,9 @@ func runStretch(cmd *cobra.Command, _ []string) {
 		e.EntryDatetime = stretchTime.ToIso8601String()
 		db.UpdateEntry(e)
 
-		log.Printf("Last entry was stretched.")
+		log.Printf("Last entry was stretched.\n")
 	} else {
-		log.Printf("Last entry was NOT stretched.")
+		log.Printf("Last entry was NOT stretched.\n")
 	}
 }
 

@@ -34,6 +34,15 @@ func (e *Entry) AddEntryProperty(name string, value string) {
 	}
 }
 
+func (e *Entry) UpdateEntryProperty(name string, value string) {
+	for _, element := range e.Properties {
+		if strings.EqualFold(element.Name, name) {
+			element.Value = value
+			break
+		}
+	}
+}
+
 func (e *Entry) GetTasksAsString() string {
 	var result string
 
@@ -61,21 +70,42 @@ func (e *Entry) GetTasksAsString() string {
 	return result
 }
 
-func (e *Entry) Dump() string {
+func (e *Entry) Dump(vertical bool) string {
 	var result string
 
 	if strings.EqualFold(e.Project, constants.BREAK) {
 		result = "Break Time"
 	} else {
 		// Add the project.
-		result = "Project[" + e.Project + "]"
+		if vertical {
+			result = "\nProject[" + e.Project + "]"
+		} else {
+			result = "Project[" + e.Project + "]"
+		}
 
 		// Add the task(s).
-		result = result + " Task[" + e.GetTasksAsString() + "]"
+		if vertical {
+			result = result + "\n   Task[" + e.GetTasksAsString() + "]"
+		} else {
+			result = result + " Task[" + e.GetTasksAsString() + "]"
+		}
+	}
+
+	// Add the note if there is one.
+	if len(e.Note) > 0 {
+		if vertical {
+			result += "\n   Note[" + e.Note + "]"
+		} else {
+			result += " Note[" + e.Note + "]"
+		}
 	}
 
 	// Add the Date.
-	result += " Date[" + e.EntryDatetime + "]"
+	if vertical {
+		result += "\n   Date[" + e.EntryDatetime + "]"
+	} else {
+		result += " Date[" + e.EntryDatetime + "]"
+	}
 
 	return result
 }
