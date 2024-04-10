@@ -49,7 +49,14 @@ func runAmend(cmd *cobra.Command, args []string) {
 	newTask := prompt("Task", entry.GetTasksAsString())
 	newNote := prompt("Note", entry.Note)
 	newEntryDatetime := prompt("Date Time", entry.EntryDatetime)
-	newEntryDatetime = carbon.Parse(newEntryDatetime).ToIso8601String()
+
+	// Validate that the user entered a correctly formatted date/time.
+	e := carbon.Parse(newEntryDatetime)
+	if e.Error != nil {
+		log.Fatalf("Invalid ISO8601 date/time format.  Please try to amend again with a valid ISO8601 formatted date/time.")
+	} else {
+		newEntryDatetime = carbon.Parse(newEntryDatetime).ToIso8601String()
+	}
 
 	log.Printf("\n")
 
