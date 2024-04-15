@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"timetracker/constants"
 
@@ -23,24 +24,71 @@ import (
 
 // amendCmd represents the amend command
 var amendCmd = &cobra.Command{
-	Use:   "amend",
-	Args:  cobra.ExactArgs(0),
-	Short: "Amend the last entry",
-	Long: `Amend is a convenient way to modify the most recent entry.  It lets
-		you modify the project, task, and/or datetime.`,
+	Use: "amend",
+	//Args:  cobra.ExactArgs(0),
+	Args:  cobra.MaximumNArgs(1),
+	Short: "Amend an entry",
+	Long: `Amend is a convenient way to modify an entry, default is the last
+entry.  It lets you modify the project, task, and/or datetime.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		runAmend(cmd, args)
 	},
 }
 
 func init() {
+	amendCmd.Flags().BoolP("today", constants.EMPTY, false, "List all the entries for today.")
 	rootCmd.AddCommand(amendCmd)
 }
 
 func runAmend(cmd *cobra.Command, args []string) {
-	// Get the last Entry from the database.
+	var entry models.Entry
+
+	today, _ := cmd.Flags().GetBool("today")
 	db := database.New(viper.GetString(constants.DATABASE_FILE))
-	var entry models.Entry = db.GetLastEntry()
+	if today {
+		var input_value string = constants.EMPTY
+
+		for {
+			var t table.Writer = table.NewWriter()
+			t.SetAutoIndex(true)
+			t.AppendHeader(table.Row{"Project", "Task(s)", "Date/Time"})
+			var entries []models.Entry = db.GetEntriesForToday(carbon.Now().StartOfDay(), carbon.Now().EndOfDay())
+			for _, entry := range entries {
+				t.AppendRow(table.Row{entry.Project, entry.GetTasksAsString(), entry.EntryDatetime})
+			}
+
+			fmt.Println(t.Render())
+
+			fmt.Print("Please enter index number of the entry you would like to amend; otherwise, ENTER to quit...\n")
+			n, _ := fmt.Scanln(&input_value)
+
+			// If nothing was entered, break out of the loop.
+			if n <= 0 {
+				log.Printf("No entry amended.\n")
+				return
+			}
+
+			// Validate what the user entered is actually a number.
+			i, err := strconv.Atoi(input_value)
+			if err != nil {
+				fmt.Printf("\nPlease enter a valid value.\n\n")
+				continue
+			}
+
+			// Validate that the entry was between 1 and the length of the entries.
+			if i <= 0 || i > len(entries) {
+				fmt.Printf("\nPlease enter a valid value.\n\n")
+				continue
+			}
+
+			// Get the entry the user wants to amend.
+			entry = entries[i - 1]
+			break
+		}
+	} else {
+		// Get the last Entry from the database.
+		entry = db.GetLastEntry()
+	}
 
 	log.Printf("Amending...\n" + entry.Dump(true) + "\n\n")
 
@@ -73,7 +121,7 @@ func runAmend(cmd *cobra.Command, args []string) {
 	fmt.Println(t.Render())
 
 	// Ask the user if they want to commit these changes or not.
-    yesNo := yesNoPrompt("\nCommit these changes?")
+	yesNo := yesNoPrompt("\nCommit these changes?")
 	if yesNo {
 		var e database.Entry
 		e.Uid = entry.Uid
@@ -94,7 +142,7 @@ func prompt(label string, value string) string {
 	r := bufio.NewReader(os.Stdin)
 	var s string
 
-	fmt.Fprintf(os.Stderr, "Enter %s (empty for no change) [" + value + "] : ", label)
+	fmt.Fprintf(os.Stderr, "Enter %s (empty for no change) ["+value+"] : ", label)
 	s, _ = r.ReadString('\n')
 	s = strings.TrimSpace(s)
 

@@ -35,7 +35,7 @@ var roundToMinutes int64
 var reportCmd = &cobra.Command{
 	Use:   "report",
 	Short: "Generate a report",
-	Long:  `When you need to generate a report, use this command`,
+	Long:  `When you need to generate a report, default today, use this command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		runReport(cmd, args)
 	},
@@ -59,12 +59,12 @@ func dateRange(date carbon.Carbon) (start carbon.Carbon, end carbon.Carbon) {
 }
 
 func init() {
-	reportCmd.Flags().BoolP("no-rounding", constants.EMPTY, false, "Reports all durations in their unrounded form")
-	reportCmd.Flags().BoolP("current-week", constants.EMPTY, false, "Report on the current week's entries")
-	reportCmd.Flags().BoolP("previous-week", constants.EMPTY, false, "Report on the previous week's entries")
-	reportCmd.Flags().BoolP("last-entry", constants.EMPTY, false, "Display the last entry's information")
-	reportCmd.Flags().StringVarP(&from, "from", constants.EMPTY, constants.EMPTY, "Specify an inclusive start date to report in "+constants.DATE_FORMAT+" format")
-	reportCmd.Flags().StringVarP(&to, "to", constants.EMPTY, constants.EMPTY, "Specify an inclusive end date to report in "+constants.DATE_FORMAT+" format.  If this is a day of the week, then it is the next occurrence from the start date of the report, including the start date itself")
+	reportCmd.Flags().BoolP("no-rounding", constants.EMPTY, false, "Reports all durations in their unrounded form.")
+	reportCmd.Flags().BoolP("current-week", constants.EMPTY, false, "Report on the current week's entries.")
+	reportCmd.Flags().BoolP("previous-week", constants.EMPTY, false, "Report on the previous week's entries.")
+	reportCmd.Flags().BoolP("last-entry", constants.EMPTY, false, "Display the last entry's information.")
+	reportCmd.Flags().StringVarP(&from, "from", constants.EMPTY, constants.EMPTY, "Specify an inclusive start date to report in "+constants.DATE_FORMAT+" format.")
+	reportCmd.Flags().StringVarP(&to, "to", constants.EMPTY, constants.EMPTY, "Specify an inclusive end date to report in "+constants.DATE_FORMAT+" format.  If this is a day of the week, then it is the next occurrence from the start date of the report, including the start date itself.")
 	reportCmd.MarkFlagsRequiredTogether("from", "to")
 	rootCmd.AddCommand(reportCmd)
 

@@ -99,9 +99,9 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.PersistentFlags().BoolP("yes", "y", false, "Noninteractive, assume yes as answer to all prompts")
-	rootCmd.PersistentFlags().Bool("debug", false, "Display stack traces for errors")
-	rootCmd.PersistentFlags().Bool("help", false, "Show help for command")
+	rootCmd.PersistentFlags().BoolP("yes", "y", false, "Noninteractive, assume yes as answer to all prompts.")
+	rootCmd.PersistentFlags().Bool("debug", false, "Display stack traces for errors.")
+	rootCmd.PersistentFlags().Bool("help", false, "Show help for command.")
 }
 
 // initConfig reads in config file and ENV variables if set.

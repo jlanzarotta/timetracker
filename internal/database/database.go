@@ -169,6 +169,37 @@ func (db *Database) GetEntries(in string) []Entry {
 	return records
 }
 
+func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) []models.Entry {
+	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime, p.name, p.value FROM entry e LEFT OUTER JOIN property p on p.entry_uid = e.uid WHERE e.entry_datetime between '%s' AND '%s' ORDER BY entry_datetime;", start.ToIso8601String(), end.ToIso8601String())
+
+	results, err := db.Conn.Query(s)
+	if err != nil {
+		log.Fatalf("Fatal Error trying to retrieve Entry records. %s.", err.Error())
+		os.Exit(1)
+	}
+
+	records := []Entry{}
+	for results.Next() {
+		var entry Entry
+		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime, &entry.Name, &entry.Value)
+		if err != nil {
+			log.Fatalf("Fatal error trying to Scan Entries results into data structure. %s\n", err.Error())
+			os.Exit(1)
+		}
+
+		records = append(records, entry)
+	}
+
+	var entries = []models.Entry{}
+	for _, e := range records {
+		var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
+		entry.AddEntryProperty(e.Name.String, e.Value.String)
+		entries = append(entries, entry)
+	}
+
+	return entries
+}
+
 func (db *Database) GetLastEntry() models.Entry {
 	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime DESC LIMIT 1;")
 	if err != nil {

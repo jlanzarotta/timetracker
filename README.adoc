@@ -131,7 +131,27 @@ TIP: Configuring and using favorites, help improve consistency as well as improv
 
 === amend
 
-The `amend` command tells Time Tracker that you are wanting to modify the most recent entry's information.  You are prompted to modify each of the entry's properties and then asked to validate those modifications before they are committed to the database.
+The `amend` command tells Time Tracker that you are wanting to modify a recent entry's information.  By default, amend amends the most recent entry's information.  How if you would like to get a list of the entries for today, use the `--today` option.  More on the `--today` option below.
+
+==== today
+
+Using this option, you are shown a list of all the entries for today.  You are then given the opportunity to chose the entry you would like to amend.
+
+[source, shell]
+----
++---+----------+----------+---------------------------+
+|   | PROJECT  | TASK(S)  | DATE/TIME                 |
++---+----------+----------+---------------------------+
+| 1 | ***hello |          | 2024-04-15T07:23:03-04:00 |
+| 2 | general  | training | 2024-04-15T07:49:12-04:00 |
+| 3 | general  | training | 2024-04-15T08:29:02-04:00 |
+| 4 | general  | training | 2024-04-15T08:53:01-04:00 |
+| 5 | general  | training | 2024-04-15T09:18:23-04:00 |
++---+----------+----------+---------------------------+
+Please enter index number of the entry you would like to amend; otherwise, ENTER to quit...
+----
+
+You are prompted to modify each of the entry's properties and then asked to validate those modifications before they are committed to the database.
 
 IMPORTANT: The Date/Time must be in ISO8601 format. https://en.wikipedia.org/wiki/ISO_8601
 
