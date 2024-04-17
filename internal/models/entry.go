@@ -78,34 +78,30 @@ func (e *Entry) Dump(vertical bool) string {
 	} else {
 		// Add the project.
 		if vertical {
-			result = "\nProject[" + e.Project + "]"
-		} else {
-			result = "Project[" + e.Project + "]"
+			result = "\n"
 		}
+		result = result + "Project[" + e.Project + "]"
 
 		// Add the task(s).
 		if vertical {
-			result = result + "\n   Task[" + e.GetTasksAsString() + "]"
-		} else {
-			result = result + " Task[" + e.GetTasksAsString() + "]"
+			result = result + "\n  "
 		}
+		result = result + " Task[" + e.GetTasksAsString() + "]"
 	}
 
 	// Add the note if there is one.
 	if len(e.Note) > 0 {
 		if vertical {
-			result += "\n   Note[" + e.Note + "]"
-		} else {
-			result += " Note[" + e.Note + "]"
+			result += "\n  "
 		}
+		result += " Note[" + e.Note + "]"
 	}
 
 	// Add the Date.
 	if vertical {
-		result += "\n   Date[" + e.EntryDatetime + "]"
-	} else {
-		result += " Date[" + e.EntryDatetime + "]"
+		result += "\n  "
 	}
+	result += " Date[" + e.EntryDatetime + "]"
 
 	return result
 }
