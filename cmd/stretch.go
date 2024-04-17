@@ -57,11 +57,8 @@ func runStretch(cmd *cobra.Command, _ []string) {
 	var entry models.Entry = db.GetLastEntry()
 
 	// Create the prompt.
-	var prompt string = "Would you like to stretch Project[" + entry.Project + "]"
-	if len(entry.GetTasksAsString()) > 0 {
-		prompt = prompt + " Tasks[" + entry.GetTasksAsString() + "]"
-	}
-	prompt = prompt + " to " + stretchTime.ToCookieString() + "?"
+	var prompt string = "Would you like to stretch\n" + entry.Dump(true)
+	prompt = prompt + "\n\nto " + stretchTime.ToCookieString() + "?"
 
 	// Ask the user if they actually want to stretch the last entry or not.
 	yesNo := yesNoPrompt(prompt)
