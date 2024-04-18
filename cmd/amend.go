@@ -94,7 +94,14 @@ func runAmend(cmd *cobra.Command, args []string) {
 
 	// Prompt to change project.
 	newProject := prompt("Project", entry.Project)
-	newTask := prompt("Task", entry.GetTasksAsString())
+
+	// If we are modifying a break, there is no need to ask for a task since
+	// breaks do not have tasks.
+	var newTask string = constants.EMPTY
+	if !strings.EqualFold(newProject, constants.BREAK) {
+		newTask = prompt("Task", entry.GetTasksAsString())
+	}
+
 	newNote := prompt("Note", entry.Note)
 	newEntryDatetime := prompt("Date Time", entry.EntryDatetime)
 
