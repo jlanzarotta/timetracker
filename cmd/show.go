@@ -8,9 +8,14 @@ import (
 	"os"
 	"timetracker/constants"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
+
+	"timetracker/internal/database"
+	"timetracker/internal/models"
 )
 
 // showCmd represents the show command
@@ -23,6 +28,7 @@ var showCmd = &cobra.Command{
 }
 
 var favorites bool
+var statistics bool
 
 type Configuration struct {
     DatabaseFilename string `yaml:"database_file"`
@@ -37,7 +43,8 @@ type Favorite struct {
 }
 
 func init() {
-	showCmd.Flags().BoolVarP(&favorites, "favorites", constants.EMPTY, false, "Show favorites")
+	showCmd.Flags().BoolVarP(&favorites, constants.FAVORITES, constants.EMPTY, false, "Show favorites")
+	showCmd.Flags().BoolVarP(&statistics, constants.STATISTICS, constants.EMPTY, false, "Show statistics")
     rootCmd.AddCommand(showCmd)
 
     // Here you will define your flags and configuration settings.
@@ -53,10 +60,15 @@ func init() {
 
 func runShow(cmd *cobra.Command, _ []string) {
     // Get the --favorites flag.
-	favorites, _ := cmd.Flags().GetBool("favorites")
+	favorites, _ := cmd.Flags().GetBool(constants.FAVORITES)
+	statistics, _ := cmd.Flags().GetBool(constants.STATISTICS)
 
     if favorites {
         showFavorites()
+    }
+
+    if statistics {
+        showStatistics()
     }
 }
 
@@ -80,4 +92,24 @@ func showFavorites() {
 	for i, f := range config.Favorites {
         log.Printf("Favorite %d: [%s]\n", i, f.Favorite)
     }
+}
+
+func showStatistics() {
+	db := database.New(viper.GetString(constants.DATABASE_FILE))
+	var firstEntry models.Entry = db.GetFirstEntry()
+	var lastEntry models.Entry = db.GetLastEntry()
+
+	log.Printf("\n")
+
+    var lastDateTime carbon.Carbon = carbon.Parse(lastEntry.EntryDatetime)
+    var firstDateTime carbon.Carbon = carbon.Parse(firstEntry.EntryDatetime)
+    var diff int64 = firstDateTime.DiffInSeconds(lastDateTime)
+
+	var t table.Writer = table.NewWriter()
+	t.Style().Options.DrawBorder = false
+	t.AppendHeader(table.Row{"Statistic", "Value"})
+	t.AppendRow(table.Row{"First Entry", firstEntry.Dump(false)})
+	t.AppendRow(table.Row{"Last Entry", lastEntry.Dump(false)})
+	t.AppendRow(table.Row{"Total Records", secondsToHuman(diff)})
+	log.Println(t.Render())
 }

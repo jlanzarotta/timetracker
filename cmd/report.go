@@ -383,7 +383,7 @@ func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []datab
 	// representation of our duration.  For example... traditionally, a person
 	// works 40 hours a week.  If the report tells us we worked 1 day and 3
 	// hours... we have to convert that in our heads to 27 hours... But if the
-	// report simply did the converation for us... that is much better.
+	// report simply did the conversion for us... that is much better.
 	if viper.GetBool(constants.SPLIT_WORK_FROM_BREAK_TIME) {
 		if totalWorkDuration > constants.SECONDS_PER_DAY {
 			log.Printf("Total Working Time: %s (%s)\n", secondsToHuman(totalWorkDuration), secondsToHMS(totalWorkDuration))

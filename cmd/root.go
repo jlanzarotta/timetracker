@@ -138,7 +138,7 @@ func initConfig() {
 	// Set debug to false.
 	viper.SetDefault("debug", false)
 
-	// Set flag indicating if work and break time should be spit into seperate values during reports.
+	// Set flag indicating if work and break time should be spit into separate values during reports.
 	viper.SetDefault("split_work_from_break_time", false)
 
 	// Should a daily total be shown for each day when rendering the "by day"

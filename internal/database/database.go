@@ -200,27 +200,11 @@ func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) [
 	return entries
 }
 
-func (db *Database) GetLastEntry() models.Entry {
-	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime DESC LIMIT 1;")
-	if err != nil {
-		log.Fatalf("Fatal Error trying to retrieve last Uid. %s.", err.Error())
-		os.Exit(1)
-	}
-
-	var lastUid int64
-	result.Next()
-	err = result.Scan(&lastUid)
-	if err != nil {
-		log.Fatalf("Fatal error trying to Scan last Uid into data structure. %s\n", err.Error())
-		os.Exit(1)
-	}
-
-	result.Close()
-
-	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime, p.name, p.value FROM entry e LEFT OUTER JOIN property p on p.entry_uid = e.uid WHERE e.uid = %d ORDER BY entry_datetime;", lastUid)
+func (db *Database) getEntry(uid int64) models.Entry {
+	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime, p.name, p.value FROM entry e LEFT OUTER JOIN property p on p.entry_uid = e.uid WHERE e.uid = %d ORDER BY entry_datetime;", uid)
 	results, err := db.Conn.QueryContext(db.Context, s)
 	if err != nil {
-		log.Fatalf("Fatal Error trying to retrieve last Uid's Entry records. %s.", err.Error())
+		log.Fatalf("Fatal Error trying to retrieve Uid's Entry records. %s.", err.Error())
 		os.Exit(1)
 	}
 
@@ -229,7 +213,7 @@ func (db *Database) GetLastEntry() models.Entry {
 		var entry Entry
 		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime, &entry.Name, &entry.Value)
 		if err != nil {
-			log.Fatalf("Fatal error trying to Scan last Uid's Entries results into data structure. %s\n", err.Error())
+			log.Fatalf("Fatal error trying to Scan Uid's Entries results into data structure. %s\n", err.Error())
 			os.Exit(1)
 		}
 
@@ -250,6 +234,50 @@ func (db *Database) GetLastEntry() models.Entry {
 
 		entry.AddEntryProperty(e.Name.String, e.Value.String)
 	}
+
+	return entry
+}
+
+func (db *Database) GetFirstEntry() models.Entry {
+	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime LIMIT 1;")
+	if err != nil {
+		log.Fatalf("Fatal Error trying to retrieve first Uid. %s.", err.Error())
+		os.Exit(1)
+	}
+
+	var firstUid int64
+	result.Next()
+	err = result.Scan(&firstUid)
+	if err != nil {
+		log.Fatalf("Fatal error trying to Scan first Uid into data structure. %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	result.Close()
+
+	var entry models.Entry = db.getEntry(firstUid)
+
+	return entry
+}
+
+func (db *Database) GetLastEntry() models.Entry {
+	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime DESC LIMIT 1;")
+	if err != nil {
+		log.Fatalf("Fatal Error trying to retrieve last Uid. %s.", err.Error())
+		os.Exit(1)
+	}
+
+	var lastUid int64
+	result.Next()
+	err = result.Scan(&lastUid)
+	if err != nil {
+		log.Fatalf("Fatal error trying to Scan last Uid into data structure. %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	result.Close()
+
+	var entry models.Entry = db.getEntry(lastUid)
 
 	return entry
 }
