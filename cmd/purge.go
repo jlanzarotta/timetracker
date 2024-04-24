@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"os"
 	"timetracker/constants"
 	"timetracker/internal/database"
 
@@ -16,7 +15,7 @@ var purgeCmd = &cobra.Command{
 	Use:   "purge",
 	Args:  cobra.MinimumNArgs(0),
 	Short: "Purge entries from the sqlite database",
-	Long: `As you continuously add completed entries, the database continues to go unbounded.  The purge command allows you to mange the database size.`,
+	Long:  `As you continuously add completed entries, the database continues to go unbounded.  The purge command allows you to mange the database size.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		runPurge(cmd, args)
 	},
@@ -35,10 +34,10 @@ func runPurge(cmd *cobra.Command, args []string) {
 	if all {
 		yesNo := yesNoPrompt("Are you sure you want to purge ALL the entries from your database?")
 		if yesNo {
-			reallySure := yesNoPrompt("WARNING: Are you REALLY sure you want to purge ALL the entries from your database?")
-			if reallySure {
-				reallyReallySure := yesNoPrompt("LAST WARNING: Are you REALLY REALLY sure you want to purge ALL the entries from your database?")
-				if reallyReallySure {
+			yesNo = yesNoPrompt("WARNING: Are you REALLY sure you want to purge ALL the entries from your database?")
+			if yesNo {
+				yesNo = yesNoPrompt("LAST WARNING: Are you REALLY REALLY sure you want to purge ALL the entries from your database?")
+				if yesNo {
 					// Yes was enter, so purge ALL entries.
 					db := database.New(viper.GetString(constants.DATABASE_FILE))
 					db.PurgeAllEntries()
@@ -56,16 +55,26 @@ func runPurge(cmd *cobra.Command, args []string) {
 
 	if previousYears {
 		var year int = carbon.Now().Year()
-		var prompt = fmt.Sprintf("Are you sure you want to purge all entries prior to %d from the database?", year);
+		var prompt = fmt.Sprintf("Are you sure you want to purge all entries prior to %d from the database?", year)
 		yesNo := yesNoPrompt(prompt)
 		if yesNo {
-			db := database.New(viper.GetString(constants.DATABASE_FILE))
-			db.PurgePreviousYearsEntries()
-			log.Printf("All entries prior to %d have been purged.", year)
+			prompt = fmt.Sprintf("WARNING: Are you REALLY sure you want to purge all entries prior to %d from the database?", year)
+			yesNo = yesNoPrompt(prompt)
+			if yesNo {
+				prompt = fmt.Sprintf("LAST WARNING: Are you REALLY REALLY sure you want to purge all entries prior to %d from the database?", year)
+				yesNo = yesNoPrompt(prompt)
+				if yesNo {
+					db := database.New(viper.GetString(constants.DATABASE_FILE))
+					db.PurgePreviousYearsEntries(year)
+					log.Printf("All entries prior to %d have been purged.", year)
+				} else {
+					log.Printf("Nothing purged.\n")
+				}
+			} else {
+				log.Printf("Nothing purged.\n")
+			}
 		} else {
 			log.Printf("Nothing purged.\n")
 		}
 	}
-
-	os.Exit(1)
 }

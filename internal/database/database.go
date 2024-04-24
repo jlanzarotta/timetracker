@@ -23,7 +23,8 @@ type Database struct {
 }
 
 func New(filename string) *Database {
-	conn, err := sql.Open("sqlite3", filename+"?_loc=UTC")
+	// NOTE: Make sure '_foreign_keys=on' is set or 'DELETE ON CASCADE' will not work.
+	conn, err := sql.Open("sqlite3", filename+"?_loc=UTC&_foreign_keys=on")
 	if err != nil {
 		log.Fatalf(err.Error())
 		os.Exit(1)
@@ -49,7 +50,6 @@ func (db *Database) Close() {
 }
 
 func (db *Database) Create() {
-
 	// Create the entry table.
 	query := "CREATE TABLE entry (uid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, project TEXT(128) NOT NULL, note TEXT(128), entry_datetime TEXT NOT NULL);"
 	_, err := db.Conn.Exec(query)
@@ -284,36 +284,51 @@ func (db *Database) GetLastEntry() models.Entry {
 	return entry
 }
 
-func (db *Database) PurgePreviousYearsEntries() {
-	log.Printf("Current year[%d].\n", carbon.Now().Year())
+func (db *Database) PurgePreviousYearsEntries(year int) {
+	var query strings.Builder
+	query.WriteString(fmt.Sprintf("%s != '%d';", "DELETE FROM entry WHERE strftime('%Y', entry_datetime)", year))
 
-	//SELECT * FROM entry WHERE strftime('%Y', entry_datetime) != '2024'
-}
-
-func (db *Database) PurgeAllEntries() {
+	// Create a transaction.
 	tx, err := db.Conn.BeginTx(db.Context, nil)
 	if err != nil {
 		log.Fatalf(err.Error())
 		os.Exit(1)
 	}
 
-	_, err = tx.ExecContext(db.Context, "DELETE FROM property;")
+	// Via the transaction, delete all the entry and associated property records.
+	_, err = tx.ExecContext(db.Context, query.String())
 	if err != nil {
-		log.Fatalf("Fatal error trying to delete all property records. %s.", err.Error())
+		log.Fatalf("Fatal error trying to delete all entry before %d. %s.", year, err.Error())
 		tx.Rollback()
 		os.Exit(1)
 	} else {
-		_, err = tx.ExecContext(db.Context, "DELETE FROM entry;")
+		err = tx.Commit()
 		if err != nil {
-			log.Fatalf("Fatal error trying to delete all entry records. %s.", err.Error())
-			tx.Rollback()
+			log.Fatalf("Fatal error committing transaction. %s.", err.Error())
 			os.Exit(1)
-		} else {
-			err = tx.Commit()
-			if err != nil {
-				log.Fatalf("Fatal error committing transaction. %s.", err.Error())
-				os.Exit(1)
-			}
+		}
+	}
+}
+
+func (db *Database) PurgeAllEntries() {
+	// Create a transaction.
+	tx, err := db.Conn.BeginTx(db.Context, nil)
+	if err != nil {
+		log.Fatalf(err.Error())
+		os.Exit(1)
+	}
+
+	// Via the transaction, delete all the entry and associated property records.
+	_, err = tx.ExecContext(db.Context, "DELETE FROM entry;")
+	if err != nil {
+		log.Fatalf("Fatal error trying to delete all entry records. %s.", err.Error())
+		tx.Rollback()
+		os.Exit(1)
+	} else {
+		err = tx.Commit()
+		if err != nil {
+			log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+			os.Exit(1)
 		}
 	}
 }
