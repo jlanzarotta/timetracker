@@ -30,8 +30,8 @@ to the database.`,
 }
 
 func init() {
-	breakCmd.Flags().StringVarP(&at, "at", constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
-	breakCmd.Flags().StringVarP(&note, "note", constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
+	breakCmd.Flags().StringVarP(&at, constants.AT, constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
+	breakCmd.Flags().StringVarP(&note, constants.NOTE, constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
 	rootCmd.AddCommand(breakCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -50,7 +50,7 @@ func runBreak(cmd *cobra.Command, _ []string) {
 	var breakTime carbon.Carbon = carbon.Now()
 
 	// Get the --at flag.
-	atTimeStr, _ := cmd.Flags().GetString("at")
+	atTimeStr, _ := cmd.Flags().GetString(constants.AT)
 
 	// Check it the --at flag was enter or not.
 	if !stringUtils.IsEmpty(atTimeStr) {

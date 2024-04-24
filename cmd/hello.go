@@ -35,7 +35,7 @@ your time.`,
 }
 
 func init() {
-	helloCmd.Flags().StringVarP(&at, "at", constants.EMPTY, constants.EMPTY, "Natural Language Time, e.g., '18 minutes ago'")
+	helloCmd.Flags().StringVarP(&at, constants.AT, constants.EMPTY, constants.EMPTY, "Natural Language Time, e.g., '18 minutes ago'")
 	rootCmd.AddCommand(helloCmd)
 }
 
@@ -68,7 +68,7 @@ func runHello(cmd *cobra.Command, _ []string) {
 	var helloTime carbon.Carbon = carbon.Now()
 
 	// Get the --at flag.
-	atTimeStr, _ := cmd.Flags().GetString("at")
+	atTimeStr, _ := cmd.Flags().GetString(constants.AT)
 
 	// Check it the --at flag was enter or not.
 	if !stringUtils.IsEmpty(atTimeStr) {

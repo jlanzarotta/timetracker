@@ -150,7 +150,7 @@ func (db *Database) GetEntries(in string) []Entry {
 
 	results, err := db.Conn.Query(s)
 	if err != nil {
-		log.Fatalf("Fatal Error trying to retrieve Entry records. %s.", err.Error())
+		log.Fatalf("Fatal error trying to retrieve Entry records. %s.", err.Error())
 		os.Exit(1)
 	}
 
@@ -174,7 +174,7 @@ func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) [
 
 	results, err := db.Conn.Query(s)
 	if err != nil {
-		log.Fatalf("Fatal Error trying to retrieve Entry records. %s.", err.Error())
+		log.Fatalf("Fatal error trying to retrieve Entry records. %s.", err.Error())
 		os.Exit(1)
 	}
 
@@ -241,7 +241,7 @@ func (db *Database) getEntry(uid int64) models.Entry {
 func (db *Database) GetFirstEntry() models.Entry {
 	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime LIMIT 1;")
 	if err != nil {
-		log.Fatalf("Fatal Error trying to retrieve first Uid. %s.", err.Error())
+		log.Fatalf("Fatal error trying to retrieve first Uid. %s.", err.Error())
 		os.Exit(1)
 	}
 
@@ -255,6 +255,7 @@ func (db *Database) GetFirstEntry() models.Entry {
 
 	result.Close()
 
+	// Create entry from the data from the database.
 	var entry models.Entry = db.getEntry(firstUid)
 
 	return entry
@@ -263,7 +264,7 @@ func (db *Database) GetFirstEntry() models.Entry {
 func (db *Database) GetLastEntry() models.Entry {
 	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime DESC LIMIT 1;")
 	if err != nil {
-		log.Fatalf("Fatal Error trying to retrieve last Uid. %s.", err.Error())
+		log.Fatalf("Fatal error trying to retrieve last Uid. %s.", err.Error())
 		os.Exit(1)
 	}
 
@@ -277,9 +278,44 @@ func (db *Database) GetLastEntry() models.Entry {
 
 	result.Close()
 
+	// Create entry from the data from the database.
 	var entry models.Entry = db.getEntry(lastUid)
 
 	return entry
+}
+
+func (db *Database) PurgePreviousYearsEntries() {
+	log.Printf("Current year[%d].\n", carbon.Now().Year())
+
+	//SELECT * FROM entry WHERE strftime('%Y', entry_datetime) != '2024'
+}
+
+func (db *Database) PurgeAllEntries() {
+	tx, err := db.Conn.BeginTx(db.Context, nil)
+	if err != nil {
+		log.Fatalf(err.Error())
+		os.Exit(1)
+	}
+
+	_, err = tx.ExecContext(db.Context, "DELETE FROM property;")
+	if err != nil {
+		log.Fatalf("Fatal error trying to delete all property records. %s.", err.Error())
+		tx.Rollback()
+		os.Exit(1)
+	} else {
+		_, err = tx.ExecContext(db.Context, "DELETE FROM entry;")
+		if err != nil {
+			log.Fatalf("Fatal error trying to delete all entry records. %s.", err.Error())
+			tx.Rollback()
+			os.Exit(1)
+		} else {
+			err = tx.Commit()
+			if err != nil {
+				log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+				os.Exit(1)
+			}
+		}
+	}
 }
 
 func (db *Database) UpdateEntry(entry Entry) {

@@ -30,7 +30,7 @@ var stretchCmd = &cobra.Command{
 }
 
 func init() {
-	stretchCmd.Flags().StringVarP(&at, "at", constants.EMPTY, constants.EMPTY, "Natural Language Time, e.g., '18 minutes ago'")
+	stretchCmd.Flags().StringVarP(&at, constants.AT, constants.EMPTY, constants.EMPTY, "Natural Language Time, e.g., '18 minutes ago'")
 	rootCmd.AddCommand(stretchCmd)
 }
 
@@ -39,7 +39,7 @@ func runStretch(cmd *cobra.Command, _ []string) {
 	var stretchTime carbon.Carbon = carbon.Now()
 
 	// Get the --at flag.
-	atTimeStr, _ := cmd.Flags().GetString("at")
+	atTimeStr, _ := cmd.Flags().GetString(constants.AT)
 
 	// Check it the --at flag was enter or not.
 	if !stringUtils.IsEmpty(atTimeStr) {

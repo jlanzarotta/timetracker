@@ -59,9 +59,9 @@ func getFavorite(index int) string {
 }
 
 func init() {
-	addCmd.Flags().StringVarP(&at, "at", constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
-	addCmd.Flags().StringVarP(&note, "note", constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
-	addCmd.Flags().IntVarP(&favorite, "favorite", constants.EMPTY, -1, "Favorite")
+	addCmd.Flags().StringVarP(&at, constants.AT, constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
+	addCmd.Flags().StringVarP(&note, constants.NOTE, constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
+	addCmd.Flags().IntVarP(&favorite, constants.FAVORITE, constants.EMPTY, -1, "Favorite")
 	rootCmd.AddCommand(addCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -80,7 +80,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 	var addTime carbon.Carbon = carbon.Now()
 
 	// Get the --at flag.
-	atTimeStr, _ := cmd.Flags().GetString("at")
+	atTimeStr, _ := cmd.Flags().GetString(constants.AT)
 
 	// Check it the --at flag was enter or not.
 	if !stringUtils.IsEmpty(atTimeStr) {
@@ -101,7 +101,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 		projectTask = args[0]
 	} else {
 		// Get the --favorite flag.
-		favorite, err := cmd.Flags().GetInt("favorite")
+		favorite, err := cmd.Flags().GetInt(constants.FAVORITE)
 		if err != nil {
 			log.Fatalf("Fatal: Missing project+task or --favorite.")
 			os.Exit(1)
