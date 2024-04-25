@@ -204,6 +204,40 @@ $ tt break --note "Went to the doctor."
 
 The `edit` command tells Time Tracker you would like to edit the data file with the default system editor.
 
+=== purge
+
+Over time as you enter new entries into the database, the database will naturally grow.  To clear out old entries, use the `purge` command.
+
+==== all
+
+The `all` command tells Time Tracker that you would like to purge ALL entries from the database.  This includes the current years.
+
+WARNING: Use this extreme caution as ALL entries will be purged.  You are given ample warning before your entries are actually purged.  YOU HAVE BEEN WARNED.
+
+[source, shell]
+----
+$tt purge --all
+Are you sure you want to purge ALL the entries from your database? (Y/N (yes/no)) yes
+WARNING: Are you REALLY sure you want to purge ALL the entries from your database? (Y/N (yes/no)) yes
+LAST WARNING: Are you REALLY REALLY sure you want to purge ALL the entries from your database? (Y/N (yes/no)) yes
+All entries purged.
+----
+
+==== prior-years
+
+The `prior-years` command tells Time Tracker that you would like to purge all entries prior to the current year.  So in other words, if you were tracking the past 5 years worth of entries in your database, and you issued the `prior-years` command, the past 4 years worth of entries would be purged from the database, leaving just the current year. 
+
+NOTE: You are given ample warning before your entries are actually purged...
+
+[source, shell]
+----
+$tt purge --prior-years
+Are you sure you want to purge all entries prior to 2024 from the database? (Y/N (yes/no)) yes
+WARNING: Are you REALLY sure you want to purge all entries prior to 2024 from the database? (Y/N (yes/no)) yes
+LAST WARNING: Are you REALLY REALLY sure you want to purge all entries prior to 2024 from the database? (Y/N (yes/no)) yes
+All entries prior to 2024 have been purged.
+----
+
 === show
 
 The `show` command tells Time Tracker you would like to show various information.
@@ -221,6 +255,25 @@ Favorite 2: [general+personal time]
 Favorite 3: [general+holiday]
 Favorite 4: [general+vacation/PTO/Comp]
 ----
+
+==== statistics
+
+The `statistics` command tells Time Tracker that you would like to show some statistics related to the entries you have entered into the database.
+
+[source, shell]
+----
+$ tt show --statistics
+
+ STATISTIC     | VALUE
+---------------+----------------------------------------------------------
+ First Entry   | Project[***hello] Task[] Date[2023-11-27T07:17:36-05:00] <1>
+ Last Entry    | Project[***hello] Task[] Date[2024-04-25T07:15:58-04:00] <2>
+ Total Records | 21 weeks 2 days 22 hours 58 minutes 22 seconds <3>
+----
+
+<1> The first entry in the database.
+<2> The last entry in the database.
+<3> The total duration that is currently in the database.
 
 === report
 

@@ -284,7 +284,7 @@ func (db *Database) GetLastEntry() models.Entry {
 	return entry
 }
 
-func (db *Database) PurgePreviousYearsEntries(year int) {
+func (db *Database) PurgePriorYearsEntries(year int) {
 	var query strings.Builder
 	query.WriteString(fmt.Sprintf("%s != '%d';", "DELETE FROM entry WHERE strftime('%Y', entry_datetime)", year))
 

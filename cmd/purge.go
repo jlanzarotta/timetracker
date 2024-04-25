@@ -23,13 +23,13 @@ var purgeCmd = &cobra.Command{
 
 func init() {
 	purgeCmd.Flags().BoolP(constants.ALL, constants.EMPTY, false, "Purge ALL entries.  Use with extreme caution!!!")
-	purgeCmd.Flags().BoolP(constants.PREVIOUS_YEARS, constants.EMPTY, false, "Purge the non-current year's entries.")
+	purgeCmd.Flags().BoolP(constants.PRIOR_YEARS, constants.EMPTY, false, "Purge all entries prior to the current year's entries.")
 	rootCmd.AddCommand(purgeCmd)
 }
 
 func runPurge(cmd *cobra.Command, args []string) {
 	all, _ := cmd.Flags().GetBool(constants.ALL)
-	previousYears, _ := cmd.Flags().GetBool(constants.PREVIOUS_YEARS)
+	priorYears, _ := cmd.Flags().GetBool(constants.PRIOR_YEARS)
 
 	if all {
 		yesNo := yesNoPrompt("Are you sure you want to purge ALL the entries from your database?")
@@ -53,7 +53,7 @@ func runPurge(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	if previousYears {
+	if priorYears {
 		var year int = carbon.Now().Year()
 		var prompt = fmt.Sprintf("Are you sure you want to purge all entries prior to %d from the database?", year)
 		yesNo := yesNoPrompt(prompt)
@@ -65,7 +65,7 @@ func runPurge(cmd *cobra.Command, args []string) {
 				yesNo = yesNoPrompt(prompt)
 				if yesNo {
 					db := database.New(viper.GetString(constants.DATABASE_FILE))
-					db.PurgePreviousYearsEntries(year)
+					db.PurgePriorYearsEntries(year)
 					log.Printf("All entries prior to %d have been purged.", year)
 				} else {
 					log.Printf("Nothing purged.\n")
