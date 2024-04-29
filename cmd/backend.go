@@ -13,8 +13,8 @@ var backendCmd = &cobra.Command{
 	Use:     "backend",
 	Aliases: []string{"b", "back"},
 	Args:    cobra.ExactArgs(0),
-	Short:   "Open an sqlite shell to the database",
-	Long:    "Open an sqlite shell to the database",
+	Short:   "Open a sqlite shell to the database",
+	Long:    "Open a sqlite shell to the database",
 	Run: func(cmd *cobra.Command, args []string) {
 		runBackend(args)
 	},
