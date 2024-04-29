@@ -188,7 +188,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 	}
 
 	// Render the table.
-	fmt.Println(t.Render())
+	log.Println(t.Render())
 }
 
 func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
@@ -248,7 +248,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 	}
 
 	// Render the table.
-	fmt.Println(t.Render())
+	log.Println(t.Render())
 }
 
 func reportByLastEntry() {
@@ -319,7 +319,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 	}
 
 	// Render the table.
-	fmt.Println(t.Render())
+	log.Println(t.Render())
 }
 
 func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
@@ -356,7 +356,7 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 	}
 
 	// Render the table.
-	fmt.Println(t.Render())
+	log.Println(t.Render())
 }
 
 func reportTotalWorkAndBreakTime(durations map[int64]models.UID, entries []database.Entry) {

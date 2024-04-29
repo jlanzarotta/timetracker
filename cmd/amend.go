@@ -57,7 +57,7 @@ func runAmend(cmd *cobra.Command, args []string) {
 				t.AppendRow(table.Row{entry.Project, entry.GetTasksAsString(), entry.EntryDatetime})
 			}
 
-			fmt.Println(t.Render())
+			log.Println(t.Render())
 
 			fmt.Print("Please enter index number of the entry you would like to amend; otherwise, ENTER to quit...\n")
 			n, _ := fmt.Scanln(&input_value)
@@ -125,7 +125,7 @@ func runAmend(cmd *cobra.Command, args []string) {
 	t.AppendRow(table.Row{"Datetime", entry.EntryDatetime, newEntryDatetime})
 
 	// Render the table.
-	fmt.Println(t.Render())
+	log.Println(t.Render())
 
 	// Ask the user if they want to commit these changes or not.
 	yesNo := yesNoPrompt("\nCommit these changes?")
