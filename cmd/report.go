@@ -523,7 +523,7 @@ func runReport(cmd *cobra.Command, _ []string) {
 				os.Exit(1)
 			}
 
-			var uid models.UID = models.NewUID(distinctUIDs[i].Uid, distinctUIDs[i].EntryDatetime, current.DiffAbsInSeconds(current, prior))
+			var uid models.UID = models.NewUID(distinctUIDs[i].Uid, distinctUIDs[i].EntryDatetime, current.DiffAbsInSeconds(prior))
 			durations[distinctUIDs[i].Uid] = uid
 		}
 	}
