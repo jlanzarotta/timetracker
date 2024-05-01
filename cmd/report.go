@@ -168,7 +168,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Date", "Project", "Task(s)", "Duration"})
+	t.AppendHeader(table.Row{constants.DATE_NORMAL_CASE, constants.PROJECT_NORMAL_CASE, constants.TASKS_NORMAL_CASE, constants.DURATION_NORMAL_CASE})
 
 	// Add each row to the table.
 	for _, i := range sortedKeys {
@@ -182,7 +182,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 
 		if show_by_day_totals {
 			t.AppendSeparator()
-			t.AppendRow(table.Row{"", "", "Total", secondsToHMS(totalPerDay)})
+			t.AppendRow(table.Row{"", "", constants.TOTAL_RIGHT_JUSTIFIED, secondsToHMS(totalPerDay)})
 			t.AppendSeparator()
 		}
 	}
@@ -229,7 +229,7 @@ func reportByEntry(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Date", "Start-End", "Duration", "Project", "Task", "Note"})
+	t.AppendHeader(table.Row{constants.DATE_NORMAL_CASE, constants.START_END_NORMAL_CASE, constants.DURATION_NORMAL_CASE, constants.PROJECT_NORMAL_CASE, constants.TASK_NORMAL_CASE, constants.NOTE_NORMAL_CASE})
 
 	// Add all the consolidated rows to the table.
 	for _, i := range sortedKeys {
@@ -306,7 +306,7 @@ func reportByProject(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Project", "Task", "Duration"})
+	t.AppendHeader(table.Row{constants.PROJECT_NORMAL_CASE, constants.TASK_NORMAL_CASE, constants.DURATION_NORMAL_CASE})
 
 	// Add all the consolidated rows to the table.
 	for _, i := range sortedKeys {
@@ -348,7 +348,7 @@ func reportByTask(durations map[int64]models.UID, entries []database.Entry) {
 	// Create and configure the table.
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
-	t.AppendHeader(table.Row{"Task(s)", "Project(s)", "Duration"})
+	t.AppendHeader(table.Row{constants.TASKS_NORMAL_CASE, constants.PROJECTS_NORMAL_CASE, constants.DURATION_NORMAL_CASE})
 
 	// Populate the table.
 	for _, v := range consolidateByTask {
