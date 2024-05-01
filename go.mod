@@ -6,7 +6,7 @@ require (
 	github.com/agrison/go-commons-lang v0.0.0-20230627184709-5cc85301fd96
 	github.com/golang-module/carbon/v2 v2.2.13
 	github.com/ijt/go-anytime v1.9.2
-	github.com/mattn/go-sqlite3 v1.14.18
+	github.com/mattn/go-sqlite3 v1.14.22
 	golang.org/x/term v0.16.0
 )
 
