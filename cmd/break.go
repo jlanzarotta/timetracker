@@ -67,7 +67,7 @@ func runBreak(cmd *cobra.Command, _ []string) {
 	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, constants.BREAK, note,
 		breakTime.ToRfc3339String())
 
-	log.Printf("Adding %s\n", entry.Dump(false))
+	log.Printf("Adding %s.\n", entry.Dump(false))
 
 	// Write the new Entry to the database.
 	db := database.New(viper.GetString(constants.DATABASE_FILE))

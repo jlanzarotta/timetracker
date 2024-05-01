@@ -122,7 +122,7 @@ favorites:
 [source, shell]
 ----
 $ tt add --favorite 0
-Adding Project[general] Task[training] Date[2023-12-07T14:10:02-05:00]
+Adding Project[general] Task[training] Date[2023-12-07T14:10:02-05:00].
 ----
 
 The previous command tells Time Tracker that you just finished working on the favorite referenced by the number '0'.  If we look in our _.timetracker.yaml_ file for the '0' favorite, we find that it references the 'project1+task1' combination.  With that, 'project1+task1' would be automatically logged as being completed.
