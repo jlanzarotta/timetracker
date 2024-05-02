@@ -204,38 +204,38 @@ $ tt break --note "Went to the doctor."
 
 The `edit` command tells Time Tracker you would like to edit the data file with the default system editor.
 
-=== purge
+=== nuke
 
-Over time as you enter new entries into the database, the database will naturally grow.  To clear out old entries, use the `purge` command.
+Over time as you enter new entries into the database, the database will naturally grow.  To clear out old entries, use the `nuke` command.
 
 ==== all
 
-The `all` command tells Time Tracker that you would like to purge ALL entries from the database.  This includes the current years.
+The `all` command tells Time Tracker that you would like to nukes ALL entries from the database.  This includes the current years.
 
-WARNING: Use this extreme caution as ALL entries will be purged.  You are given ample warning before your entries are actually purged.  YOU HAVE BEEN WARNED.
+WARNING: Use this extreme caution as ALL entries will be nuked.  You are given ample warning before your entries are actually nuked.  YOU HAVE BEEN WARNED.
 
 [source, shell]
 ----
-$tt purge --all
-Are you sure you want to purge ALL the entries from your database? (Y/N (yes/no)) yes
-WARNING: Are you REALLY sure you want to purge ALL the entries from your database? (Y/N (yes/no)) yes
-LAST WARNING: Are you REALLY REALLY sure you want to purge ALL the entries from your database? (Y/N (yes/no)) yes
-All entries purged.
+$tt nuke --all
+Are you sure you want to nuke ALL the entries from your database? (Y/N (yes/no)) yes
+WARNING: Are you REALLY sure you want to nuke ALL the entries from your database? (Y/N (yes/no)) yes
+LAST WARNING: Are you REALLY REALLY sure you want to nuke ALL the entries from your database? (Y/N (yes/no)) yes
+All entries nuked.
 ----
 
 ==== prior-years
 
-The `prior-years` command tells Time Tracker that you would like to purge all entries prior to the current year.  So in other words, if you were tracking the past 5 years worth of entries in your database, and you issued the `prior-years` command, the past 4 years worth of entries would be purged from the database, leaving just the current year. 
+The `prior-years` command tells Time Tracker that you would like to nuke all entries prior to the current year.  So in other words, if you were tracking the past 5 years worth of entries in your database, and you issued the `prior-years` command, the past 4 years worth of entries would be nuked from the database, leaving just the current year. 
 
-NOTE: You are given ample warning before your entries are actually purged...
+NOTE: You are given ample warning before your entries are actually nuked...
 
 [source, shell]
 ----
-$tt purge --prior-years
-Are you sure you want to purge all entries prior to 2024 from the database? (Y/N (yes/no)) yes
-WARNING: Are you REALLY sure you want to purge all entries prior to 2024 from the database? (Y/N (yes/no)) yes
-LAST WARNING: Are you REALLY REALLY sure you want to purge all entries prior to 2024 from the database? (Y/N (yes/no)) yes
-All entries prior to 2024 have been purged.
+$tt nuke --prior-years
+Are you sure you want to nuke all entries prior to 2024 from the database? (Y/N (yes/no)) yes
+WARNING: Are you REALLY sure you want to nuke all entries prior to 2024 from the database? (Y/N (yes/no)) yes
+LAST WARNING: Are you REALLY REALLY sure you want to nuke all entries prior to 2024 from the database? (Y/N (yes/no)) yes
+All entries prior to 2024 have been nuked.
 ----
 
 === show

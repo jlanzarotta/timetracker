@@ -284,7 +284,7 @@ func (db *Database) GetLastEntry() models.Entry {
 	return entry
 }
 
-func (db *Database) PurgePriorYearsEntries(year int) {
+func (db *Database) NukePriorYearsEntries(year int) {
 	var query strings.Builder
 	query.WriteString(fmt.Sprintf("%s != '%d';", "DELETE FROM entry WHERE strftime('%Y', entry_datetime)", year))
 
@@ -310,7 +310,7 @@ func (db *Database) PurgePriorYearsEntries(year int) {
 	}
 }
 
-func (db *Database) PurgeAllEntries() {
+func (db *Database) NukeAllEntries() {
 	// Create a transaction.
 	tx, err := db.Conn.BeginTx(db.Context, nil)
 	if err != nil {
