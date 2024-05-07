@@ -27,7 +27,6 @@ import (
 var from string
 var to string
 
-// var daysOfWeek = map[string]int{}
 var daysOfWeek = map[string]string{}
 var roundToMinutes int64
 
