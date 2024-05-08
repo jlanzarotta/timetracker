@@ -24,8 +24,7 @@ import (
 
 // amendCmd represents the amend command
 var amendCmd = &cobra.Command{
-	Use: "amend",
-	//Args:  cobra.ExactArgs(0),
+	Use:   "amend",
 	Args:  cobra.MaximumNArgs(1),
 	Short: "Amend an entry",
 	Long: `Amend is a convenient way to modify an entry, default is the last
