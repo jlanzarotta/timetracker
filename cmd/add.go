@@ -56,7 +56,7 @@ func getFavorite(index int) string {
 	}
 
 	if index > len(config.Favorites) {
-		log.Fatalf("Favorite[%d] not found in configuration file[%s].\n", index, viper.ConfigFileUsed())
+		log.Fatalf("Fatal: Favorite[%d] not found in configuration file[%s].\n", index, viper.ConfigFileUsed())
 		os.Exit(1)
 	}
 
