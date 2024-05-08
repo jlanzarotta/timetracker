@@ -143,14 +143,20 @@ func initConfig() {
 	// report.
 	viper.SetDefault("show_by_day_totals", true)
 
+	// Set each of the reports to true.
+	viper.SetDefault("report.by_project", true)
+	viper.SetDefault("report.by_task", true)
+	viper.SetDefault("report.by_entry", true)
+	viper.SetDefault("report.by_day", true)
+
 	// Read the configuration file.
 	err = viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// No config file, just use defaults.
-			log.Println("Unable to load config file, using/writing default values.")
 			viper.SafeWriteConfig()
 			writeFavorites(home)
+			log.Printf("Unable to load config file, using/writing default values to [%s].\n", viper.ConfigFileUsed())
 		} else {
 			log.Fatalf("Fatal error reading config file: %s\n", err.Error())
 			os.Exit(1)
@@ -190,7 +196,7 @@ func writeFavorites(home string) {
 	}
 
 	// Open our configuration file.
-	f, err := os.OpenFile(viper.ConfigFileUsed(), os.O_APPEND | os.O_WRONLY, 0644)
+	f, err := os.OpenFile(viper.ConfigFileUsed(), os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("Unable to write favorites to configuration file[%s].\n", viper.ConfigFileUsed())
 		os.Exit(1)
@@ -199,13 +205,13 @@ func writeFavorites(home string) {
 	// Remember to close the file.
 	defer f.Close()
 
-	var lines = []string {
+	var lines = []string{
 		"favorites:",
-        "  - favorite: general+training",
-        "  - favorite: general+product development",
-        "  - favorite: general+personal time",
-        "  - favorite: general+holiday",
-        "  - favorite: general+vacation/PTO/Comp",
+		"  - favorite: general+training",
+		"  - favorite: general+product development",
+		"  - favorite: general+personal time",
+		"  - favorite: general+holiday",
+		"  - favorite: general+vacation/PTO/Comp",
 	}
 
 	// Write our default favorites to the configuration file.

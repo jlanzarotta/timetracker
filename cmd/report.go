@@ -559,11 +559,24 @@ func runReport(cmd *cobra.Command, _ []string) {
 		}
 	}
 
+	// Run each of the reports, if configured to do so.
 	reportTotalWorkAndBreakTime(durations, entries)
-	reportByProject(durations, entries)
-	reportByTask(durations, entries)
-	reportByEntry(durations, entries)
-	reportByDay(durations, entries)
+
+	if viper.GetBool(constants.REPORT_BY_PROJECT) {
+		reportByProject(durations, entries)
+	}
+
+	if viper.GetBool(constants.REPORT_BY_TASK) {
+		reportByTask(durations, entries)
+	}
+
+	if viper.GetBool(constants.REPORT_BY_ENTRY) {
+		reportByEntry(durations, entries)
+	}
+
+	if viper.GetBool(constants.REPORT_BY_DAY) {
+		reportByDay(durations, entries)
+	}
 }
 
 func secondsToHMS(inSeconds int64) (result string) {
