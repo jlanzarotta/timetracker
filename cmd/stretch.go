@@ -19,7 +19,7 @@ import (
 	"timetracker/internal/models"
 )
 
-// stretchCmd represents the add command
+// stretchCmd represents the stretch command
 var stretchCmd = &cobra.Command{
 	Use:   "stretch last project",
 	Short: "Stretch the latest entry",
