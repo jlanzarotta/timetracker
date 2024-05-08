@@ -31,7 +31,7 @@ func init() {
 	rootCmd.AddCommand(nukeCmd)
 }
 
-func runNuke(cmd *cobra.Command, args []string) {
+func runNuke(cmd *cobra.Command, _ []string) {
 	all, _ := cmd.Flags().GetBool(constants.ALL)
 	priorYears, _ := cmd.Flags().GetBool(constants.PRIOR_YEARS)
 

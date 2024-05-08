@@ -40,7 +40,7 @@ func init() {
 	rootCmd.AddCommand(amendCmd)
 }
 
-func runAmend(cmd *cobra.Command, args []string) {
+func runAmend(cmd *cobra.Command, _ []string) {
 	var entry models.Entry
 
 	today, _ := cmd.Flags().GetBool("today")
@@ -82,7 +82,7 @@ func runAmend(cmd *cobra.Command, args []string) {
 			}
 
 			// Get the entry the user wants to amend.
-			entry = entries[i - 1]
+			entry = entries[i-1]
 			break
 		}
 	} else {
