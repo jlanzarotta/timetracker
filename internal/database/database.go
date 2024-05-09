@@ -284,6 +284,26 @@ func (db *Database) GetLastEntry() models.Entry {
 	return entry
 }
 
+func (db *Database) GetCountEntries() int64 {
+	result, err := db.Conn.QueryContext(db.Context, "SELECT COUNT(*) FROM entry;")
+	if err != nil {
+		log.Fatalf("Fatal error trying to retrieve count of entries. %s.", err.Error())
+		os.Exit(1)
+	}
+
+	var count int64
+	result.Next()
+	err = result.Scan(&count)
+	if err != nil {
+		log.Fatalf("Fatal error trying to Scan count. %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	result.Close()
+
+	return count
+}
+
 func (db *Database) NukePriorYearsEntries(year int) {
 	var query strings.Builder
 	query.WriteString(fmt.Sprintf("%s != '%d';", "DELETE FROM entry WHERE strftime('%Y', entry_datetime)", year))
