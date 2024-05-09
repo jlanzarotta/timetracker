@@ -255,9 +255,9 @@ func reportByLastEntry() {
 	var entry models.Entry = db.GetLastEntry()
 	if strings.EqualFold(entry.Project, constants.HELLO) ||
 		strings.EqualFold(entry.Project, constants.BREAK) {
-		log.Printf("DateTime: %s\n      Project: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project)
+		log.Printf("DateTime: %s\n      Project: %s\n    Note: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project, entry.Note)
 	} else {
-		log.Printf("DateTime: %s\n Project: %s\n   Tasks: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project, entry.GetTasksAsString())
+		log.Printf("DateTime: %s\n Project: %s\n   Tasks: %s\n    Note: %s\n", carbon.Parse(entry.EntryDatetime).Format("Y-m-d g:i:sa"), entry.Project, entry.GetTasksAsString(), entry.Note)
 	}
 }
 
