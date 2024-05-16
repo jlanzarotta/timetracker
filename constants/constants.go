@@ -46,6 +46,6 @@ const TASK string = "task"
 const TASK_DELIMITER string = "+"
 const TASK_NORMAL_CASE = "Task"
 const TASKS_NORMAL_CASE = "Task(s)"
-const TOTAL_RIGHT_JUSTIFIED = "   TOTAL"
+const TOTAL = "TOTAL"
 const UNKNOWN_UID int64 = -1
 const WEEK_START string = "week_start"

@@ -181,7 +181,7 @@ func reportByDay(durations map[int64]models.UID, entries []database.Entry) {
 
 		if show_by_day_totals {
 			t.AppendSeparator()
-			t.AppendRow(table.Row{"", "", constants.TOTAL_RIGHT_JUSTIFIED, secondsToHMS(totalPerDay)})
+			t.AppendRow(table.Row{"", "", constants.TOTAL, secondsToHMS(totalPerDay)})
 			t.AppendSeparator()
 		}
 	}
