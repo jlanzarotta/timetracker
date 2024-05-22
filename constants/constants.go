@@ -48,4 +48,5 @@ const TASK_NORMAL_CASE = "Task"
 const TASKS_NORMAL_CASE = "Task(s)"
 const TOTAL = "TOTAL"
 const UNKNOWN_UID int64 = -1
+const WEB_SITE string = "https://github.com/jlanzarotta/timetracker/"
 const WEEK_START string = "week_start"
