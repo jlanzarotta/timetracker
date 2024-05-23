@@ -23,6 +23,7 @@ func init() {
 }
 
 func runWeb(_ *cobra.Command, _ []string) {
+	log.Printf("Opening the %s website in your default browser...\n", constants.APPLICATION_NAME)
 	var error = browser.OpenURL(constants.WEB_SITE)
 	if error != nil {
 		log.Printf("Unable to open URL[%s].  Error: %s\n", constants.WEB_SITE, error)

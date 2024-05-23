@@ -1,6 +1,7 @@
 package constants
 
 const ALL string = "all"
+const APPLICATION_NAME = "Time Tracker"
 const AT string = "at"
 const BREAK string = "***break"
 const CARBON_DATE_FORMAT string = "Y-m-d"
