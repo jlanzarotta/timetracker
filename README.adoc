@@ -388,6 +388,16 @@ Would you like to stretch Project[***hello] to Tuesday, 05-Dec-2023 13:48:32 EST
 Last entry was stretched.             
 ----
 
+=== web
+
+Opens the Time Tracker website in your default web browser.
+
+[source, shell]
+----
+$ tt web
+Opening the Time Tracker website in your default browser...
+----
+
 == Configuration File
 
 When Time Tracker starts up, it checks to make sure there is a default configuration file in the default directory.  If the files does not exist, it is automatically crated.
