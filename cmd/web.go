@@ -11,7 +11,7 @@ import (
 // webCmd represents the version command.
 var webCmd = &cobra.Command{
 	Use:   "web",
-	Short: "Open the Time Tracker website in your default browser.",
+	Short: "Open the Time Tracker website in your default browser",
 	Long:  "Open the Time Tracker website in your default browser.",
 	Run: func(cmd *cobra.Command, args []string) {
 		runWeb(cmd, args)

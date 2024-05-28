@@ -22,6 +22,7 @@ import (
 var showCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show various information",
+	Long:  "Show various information.",
 	Run: func(cmd *cobra.Command, args []string) {
 		runShow(cmd, args)
 	},

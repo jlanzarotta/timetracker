@@ -11,8 +11,8 @@ import (
 var configureCmd = &cobra.Command{
 	Use:     "configure",
 	Aliases: []string{"c", "config", "conf"},
-	Short:   "Write out a YAML config file. Print path to config file",
-	Long:    "Write out a YAML config file. Print path to config file",
+	Short:   "Write out a YAML config file",
+	Long:    "Write out a YAML config file. Print path to config file.",
 	Run: func(cmd *cobra.Command, args []string) {
 		runConfigure(args)
 	},
