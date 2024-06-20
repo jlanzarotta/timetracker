@@ -304,53 +304,84 @@ func (db *Database) GetCountEntries() int64 {
 	return count
 }
 
-func (db *Database) NukePriorYearsEntries(year int) {
+func (db *Database) NukePriorYearsEntries(dryRun bool, year int) int64 {
+	var count int64 = 0
 	var query strings.Builder
-	query.WriteString(fmt.Sprintf("%s != '%d';", "DELETE FROM entry WHERE strftime('%Y', entry_datetime)", year))
 
-	// Create a transaction.
-	tx, err := db.Conn.BeginTx(db.Context, nil)
-	if err != nil {
-		log.Fatalf(err.Error())
-		os.Exit(1)
-	}
+	if !dryRun {
+		query.WriteString(fmt.Sprintf("%s != '%d';", "DELETE FROM entry WHERE strftime('%Y', entry_datetime)", year))
 
-	// Via the transaction, delete all the entry and associated property records.
-	_, err = tx.ExecContext(db.Context, query.String())
-	if err != nil {
-		log.Fatalf("Fatal error trying to delete all entry before %d. %s.", year, err.Error())
-		tx.Rollback()
-		os.Exit(1)
-	} else {
-		err = tx.Commit()
+		// Create a transaction.
+		tx, err := db.Conn.BeginTx(db.Context, nil)
 		if err != nil {
-			log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+			log.Fatalf(err.Error())
 			os.Exit(1)
 		}
+
+		// Via the transaction, delete all the entry and associated property records.
+		_, err = tx.ExecContext(db.Context, query.String())
+		if err != nil {
+			log.Fatalf("Fatal error trying to delete all entry before %d. %s.", year, err.Error())
+			tx.Rollback()
+			os.Exit(1)
+		} else {
+			err = tx.Commit()
+			if err != nil {
+				log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+				os.Exit(1)
+			}
+		}
+	} else {
+		query.WriteString(fmt.Sprintf("%s != '%d';", "SELECT COUNT(*) FROM entry WHERE strftime('%Y', entry_datetime)", year))
+		result, err := db.Conn.QueryContext(db.Context, query.String())
+		if err != nil {
+			log.Fatalf("Fatal error trying to retrieve count of entries. %s.", err.Error())
+			os.Exit(1)
+		}
+
+		result.Next()
+		err = result.Scan(&count)
+		if err != nil {
+			log.Fatalf("Fatal error trying to Scan count. %s\n", err.Error())
+			os.Exit(1)
+		}
+
+		result.Close()
 	}
+
+	return count
 }
 
-func (db *Database) NukeAllEntries() {
-	// Create a transaction.
-	tx, err := db.Conn.BeginTx(db.Context, nil)
-	if err != nil {
-		log.Fatalf(err.Error())
-		os.Exit(1)
-	}
+func (db *Database) NukeAllEntries(dryRun bool) int64 {
+	var count int64 = 0
 
-	// Via the transaction, delete all the entry and associated property records.
-	_, err = tx.ExecContext(db.Context, "DELETE FROM entry;")
-	if err != nil {
-		log.Fatalf("Fatal error trying to delete all entry records. %s.", err.Error())
-		tx.Rollback()
-		os.Exit(1)
-	} else {
-		err = tx.Commit()
+	if !dryRun {
+		// Create a transaction.
+		tx, err := db.Conn.BeginTx(db.Context, nil)
 		if err != nil {
-			log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+			log.Fatalf(err.Error())
 			os.Exit(1)
 		}
+
+		// Via the transaction, delete all the entry and associated property records.
+		_, err = tx.ExecContext(db.Context, "DELETE FROM entry;")
+		if err != nil {
+			log.Fatalf("Fatal error trying to delete all entry records. %s.", err.Error())
+			tx.Rollback()
+			os.Exit(1)
+		} else {
+			err = tx.Commit()
+			if err != nil {
+				log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+				os.Exit(1)
+			}
+		}
+	} else {
+		count = db.GetCountEntries()
+		log.Printf("%d entries would have been nuked.", count)
 	}
+
+	return count
 }
 
 func (db *Database) UpdateEntry(entry Entry) {

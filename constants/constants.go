@@ -11,6 +11,7 @@ const DATABASE_FILE string = "database_file"
 const DATE_FORMAT string = "2006-01-02" // WTF golang?  Why this date format?
 const DATE_NORMAL_CASE = "Date"
 const DURATION_NORMAL_CASE = "Duration"
+const DRY_RUN = "dry-run"
 const EMPTY string = ""
 const FAVORITE string = "favorite"
 const FAVORITES string = "favorites"

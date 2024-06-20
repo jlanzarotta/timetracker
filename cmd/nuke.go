@@ -28,12 +28,14 @@ var nukeCmd = &cobra.Command{
 func init() {
 	nukeCmd.Flags().BoolP(constants.ALL, constants.EMPTY, false, "Nuke ALL entries.  Use with extreme caution!!!")
 	nukeCmd.Flags().BoolP(constants.PRIOR_YEARS, constants.EMPTY, false, "Nuke all entries prior to the current year's entries.")
+	nukeCmd.Flags().BoolP(constants.DRY_RUN, constants.EMPTY, false, "Do not actually nuke anything, but show what potential would be nuked.")
 	rootCmd.AddCommand(nukeCmd)
 }
 
 func runNuke(cmd *cobra.Command, _ []string) {
 	all, _ := cmd.Flags().GetBool(constants.ALL)
 	priorYears, _ := cmd.Flags().GetBool(constants.PRIOR_YEARS)
+	dryRun, _ := cmd.Flags().GetBool(constants.DRY_RUN)
 
 	if all {
 		yesNo := yesNoPrompt("Are you sure you want to nuke ALL the entries from your database?")
@@ -44,9 +46,13 @@ func runNuke(cmd *cobra.Command, _ []string) {
 				if yesNo {
 					// Yes was enter, so nuke ALL entries.
 					db := database.New(viper.GetString(constants.DATABASE_FILE))
-					db.NukeAllEntries()
+					var count = db.NukeAllEntries(dryRun)
 					showExplosion()
-					log.Printf("All entries nuked.\n")
+					if dryRun {
+						log.Printf("All %d entries would have been nuked.", count)
+					} else {
+						log.Printf("All entries nuked.\n")
+					}
 				} else {
 					log.Printf("Nothing nuked.\n")
 				}
@@ -68,9 +74,13 @@ func runNuke(cmd *cobra.Command, _ []string) {
 				yesNo = yesNoPrompt(prompt)
 				if yesNo {
 					db := database.New(viper.GetString(constants.DATABASE_FILE))
-					db.NukePriorYearsEntries(year)
+					var count = db.NukePriorYearsEntries(dryRun, year)
 					showExplosion()
-					log.Printf("All entries prior to %d have been nuked.", year)
+					if dryRun {
+						log.Printf("All %d entries prior to %d would have been nuked.", count, year)
+					} else {
+						log.Printf("All entries prior to %d have been nuked.", year)
+					}
 				} else {
 					log.Printf("Nothing nuked.\n")
 				}
