@@ -225,7 +225,7 @@ All entries nuked.
 
 ==== prior-years
 
-The `prior-years` command tells Time Tracker that you would like to nuke all entries prior to the current year.  So in other words, if you were tracking the past 5 years worth of entries in your database, and you issued the `prior-years` command, the past 4 years worth of entries would be nuked from the database, leaving just the current year. 
+The `prior-years` command tells Time Tracker that you would like to nuke all entries prior to the current year.  So in other words, if you were tracking the past 5 years worth of entries in your database, and you issued the `prior-years` command, the past 4 years worth of entries would be nuked from the database, leaving just the current year.
 
 NOTE: You are given ample warning before your entries are actually nuked...
 
@@ -236,6 +236,19 @@ Are you sure you want to nuke all entries prior to 2024 from the database? (Y/N 
 WARNING: Are you REALLY sure you want to nuke all entries prior to 2024 from the database? (Y/N (yes/no)) yes
 LAST WARNING: Are you REALLY REALLY sure you want to nuke all entries prior to 2024 from the database? (Y/N (yes/no)) yes
 All entries prior to 2024 have been nuked.
+----
+
+==== dry-run
+
+The `dry-run` command tells Time Tracker that you do not really want anything nuked.  But instead just report on how many entries would have been nuked.
+
+[source, shell]
+----
+$tt nuke --all --dry-run
+Are you sure you want to nuke ALL the entries from your database? (Y/N (yes/no)) yes
+WARNING: Are you REALLY sure you want to nuke ALL the entries from your database? (Y/N (yes/no)) yes
+LAST WARNING: Are you REALLY REALLY sure you want to nuke ALL the entries from your database? (Y/N (yes/no)) yes
+All 639 entries would have been nuked.
 ----
 
 === show
@@ -383,9 +396,9 @@ In the below example, the latest entry to 05-Dec-2023...  Time Tracker will as y
 
 [source, shell]
 ----
-$ tt stretch 
+$ tt stretch
 Would you like to stretch Project[***hello] to Tuesday, 05-Dec-2023 13:48:32 EST? (Y/N (yes/no)) yes
-Last entry was stretched.             
+Last entry was stretched.
 ----
 
 === web
