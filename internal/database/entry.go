@@ -7,6 +7,6 @@ type Entry struct {
 	Project       string
 	Note          sql.NullString
 	EntryDatetime string
-	Name          sql.NullString // Property Name.
-	Value         sql.NullString // Property Value.
+	//Name          sql.NullString // Property Name.
+	//Value         sql.NullString // Property Value.
 }

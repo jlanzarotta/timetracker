@@ -5,7 +5,8 @@ package cmd
 
 import (
 	"bufio"
-	"database/sql"
+
+	//FIXME	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -92,17 +93,24 @@ func runAmend(cmd *cobra.Command, _ []string) {
 	log.Printf("Amending...\n" + entry.Dump(true) + "\n\n")
 
 	// Prompt to change project.
-	newProject := prompt("Project", entry.Project)
+	newProject := prompt(constants.PROJECT_NORMAL_CASE, entry.Project)
 
 	// If we are modifying a break, there is no need to ask for a task since
 	// breaks do not have tasks.
 	var newTask string = constants.EMPTY
 	if !strings.EqualFold(newProject, constants.BREAK) {
-		newTask = prompt("Task", entry.GetTasksAsString())
+		newTask = prompt(constants.TASK_NORMAL_CASE, entry.GetTasksAsString())
 	}
 
-	newNote := prompt("Note", entry.Note)
-	newEntryDatetime := prompt("Date Time", entry.EntryDatetime)
+	newNote := prompt(constants.NOTE_NORMAL_CASE, entry.Note)
+
+	// If there was an URL, prompt to change it.
+	var newURL string = constants.EMPTY
+	if len(entry.GetUrlAsString()) > 0 {
+		newURL = prompt(constants.URL_NORMAL_CASE, entry.GetUrlAsString())
+	}
+
+	newEntryDatetime := prompt(constants.DATE_TIME_NORMAL_CASE, entry.EntryDatetime)
 
 	// Validate that the user entered a correctly formatted date/time.
 	e := carbon.Parse(newEntryDatetime)
@@ -118,10 +126,15 @@ func runAmend(cmd *cobra.Command, _ []string) {
 	var t table.Writer = table.NewWriter()
 	t.Style().Options.DrawBorder = false
 	t.AppendHeader(table.Row{"", "Old", "New"})
-	t.AppendRow(table.Row{"Project", entry.Project, newProject})
-	t.AppendRow(table.Row{"Task", entry.GetTasksAsString(), newTask})
-	t.AppendRow(table.Row{"Note", entry.Note, newNote})
-	t.AppendRow(table.Row{"Datetime", entry.EntryDatetime, newEntryDatetime})
+	t.AppendRow(table.Row{constants.PROJECT_NORMAL_CASE, entry.Project, newProject})
+	t.AppendRow(table.Row{constants.TASK_NORMAL_CASE, entry.GetTasksAsString(), newTask})
+	t.AppendRow(table.Row{constants.NOTE_NORMAL_CASE, entry.Note, newNote})
+
+	if len(newURL) > 0 {
+		t.AppendRow(table.Row{constants.URL_NORMAL_CASE, entry.GetUrlAsString(), newURL})
+	}
+
+	t.AppendRow(table.Row{constants.DATE_TIME_NORMAL_CASE, entry.EntryDatetime, newEntryDatetime})
 
 	// Render the table.
 	log.Println(t.Render())
@@ -129,13 +142,17 @@ func runAmend(cmd *cobra.Command, _ []string) {
 	// Ask the user if they want to commit these changes or not.
 	yesNo := yesNoPrompt("\nCommit these changes?")
 	if yesNo {
-		var e database.Entry
+		var e models.Entry
 		e.Uid = entry.Uid
 		e.Project = newProject
-		e.Note = sql.NullString{String: newNote, Valid: true}
-		e.Name = sql.NullString{String: constants.TASK, Valid: true}
-		e.Value = sql.NullString{String: newTask, Valid: true}
+		e.Note = newNote
 		e.EntryDatetime = newEntryDatetime
+		e.AddEntryProperty(constants.TASK, newTask)
+
+		if len(newURL) > 0 {
+			e.AddEntryProperty(constants.URL, newURL)
+		}
+
 		db.UpdateEntry(e)
 
 		log.Printf("Last entry amended.\n")

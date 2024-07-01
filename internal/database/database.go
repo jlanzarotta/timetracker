@@ -145,8 +145,32 @@ func (db *Database) GetDistinctUIDs(start carbon.Carbon, end carbon.Carbon) []Di
 	return records
 }
 
-func (db *Database) GetEntries(in string) []Entry {
-	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime, p.name, p.value FROM entry e LEFT OUTER JOIN property p on p.entry_uid = e.uid WHERE e.uid IN (%s) ORDER BY entry_datetime;", in)
+func (db *Database) GetProperties(entryUid int64) []Property {
+	var s string = fmt.Sprintf("SELECT p.name, p.value FROM property p WHERE p.entry_uid = %d;", entryUid)
+
+	results, err := db.Conn.Query(s)
+	if err != nil {
+		log.Fatalf("Fatal error trying to retrieve Property records. %s.", err.Error())
+		os.Exit(1)
+	}
+
+	records := []Property{}
+	for results.Next() {
+		var property Property
+		err = results.Scan(&property.Name, &property.Value)
+		if err != nil {
+			log.Fatalf("Fatal error trying to Scan Property results into data structure. %s\n", err.Error())
+			os.Exit(1)
+		}
+
+		records = append(records, property)
+	}
+
+	return records
+}
+
+func (db *Database) GetEntries(in string) []models.Entry {
+	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime FROM entry e WHERE e.uid IN (%s) ORDER BY entry_datetime;", in)
 
 	results, err := db.Conn.Query(s)
 	if err != nil {
@@ -154,13 +178,18 @@ func (db *Database) GetEntries(in string) []Entry {
 		os.Exit(1)
 	}
 
-	records := []Entry{}
+	records := []models.Entry{}
 	for results.Next() {
-		var entry Entry
-		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime, &entry.Name, &entry.Value)
+		var entry models.Entry
+		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime)
 		if err != nil {
 			log.Fatalf("Fatal error trying to Scan Entries results into data structure. %s\n", err.Error())
 			os.Exit(1)
+		}
+
+		var properties []Property = db.GetProperties(entry.Uid)
+		for _, p := range properties {
+			entry.AddEntryProperty(p.Name.String, p.Value.String)
 		}
 
 		records = append(records, entry)
@@ -170,7 +199,7 @@ func (db *Database) GetEntries(in string) []Entry {
 }
 
 func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) []models.Entry {
-	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime, p.name, p.value FROM entry e LEFT OUTER JOIN property p on p.entry_uid = e.uid WHERE e.entry_datetime between '%s' AND '%s' ORDER BY entry_datetime;", start.ToIso8601String(), end.ToIso8601String())
+	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime FROM entry e WHERE e.entry_datetime between '%s' AND '%s' ORDER BY entry_datetime;", start.ToIso8601String(), end.ToIso8601String())
 
 	results, err := db.Conn.Query(s)
 	if err != nil {
@@ -181,7 +210,7 @@ func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) [
 	records := []Entry{}
 	for results.Next() {
 		var entry Entry
-		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime, &entry.Name, &entry.Value)
+		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime)
 		if err != nil {
 			log.Fatalf("Fatal error trying to Scan Entries results into data structure. %s\n", err.Error())
 			os.Exit(1)
@@ -193,7 +222,10 @@ func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) [
 	var entries = []models.Entry{}
 	for _, e := range records {
 		var entry models.Entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
-		entry.AddEntryProperty(e.Name.String, e.Value.String)
+		var properties []Property = db.GetProperties(entry.Uid)
+		for _, p := range properties {
+			entry.AddEntryProperty(p.Name.String, p.Value.String)
+		}
 		entries = append(entries, entry)
 	}
 
@@ -201,7 +233,7 @@ func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) [
 }
 
 func (db *Database) getEntry(uid int64) models.Entry {
-	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime, p.name, p.value FROM entry e LEFT OUTER JOIN property p on p.entry_uid = e.uid WHERE e.uid = %d ORDER BY entry_datetime;", uid)
+	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime FROM entry e WHERE e.uid = %d ORDER BY entry_datetime;", uid)
 	results, err := db.Conn.QueryContext(db.Context, s)
 	if err != nil {
 		log.Fatalf("Fatal Error trying to retrieve Uid's Entry records. %s.", err.Error())
@@ -211,7 +243,7 @@ func (db *Database) getEntry(uid int64) models.Entry {
 	records := []Entry{}
 	for results.Next() {
 		var entry Entry
-		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime, &entry.Name, &entry.Value)
+		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime)
 		if err != nil {
 			log.Fatalf("Fatal error trying to Scan Uid's Entries results into data structure. %s\n", err.Error())
 			os.Exit(1)
@@ -226,13 +258,15 @@ func (db *Database) getEntry(uid int64) models.Entry {
 	for i, e := range records {
 		if i == 0 {
 			entry = models.NewEntry(e.Uid, e.Project, e.Note.String, e.EntryDatetime)
-
 			if strings.EqualFold(e.Project, constants.HELLO) {
 				break
 			}
 		}
 
-		entry.AddEntryProperty(e.Name.String, e.Value.String)
+		var properties []Property = db.GetProperties(entry.Uid)
+		for _, p := range properties {
+			entry.AddEntryProperty(p.Name.String, p.Value.String)
+		}
 	}
 
 	return entry
@@ -384,9 +418,11 @@ func (db *Database) NukeAllEntries(dryRun bool) int64 {
 	return count
 }
 
-func (db *Database) UpdateEntry(entry Entry) {
+func (db *Database) UpdateEntry(entry models.Entry) {
 	var previous bool = false
 	var query strings.Builder
+
+	// Update the Entry.
 	query.WriteString("UPDATE entry")
 	query.WriteString(" SET")
 
@@ -395,11 +431,11 @@ func (db *Database) UpdateEntry(entry Entry) {
 		previous = true
 	}
 
-	if entry.Note.Valid {
+	if len(entry.Note) > 0 {
 		if previous {
 			query.WriteString(", ")
 		}
-		query.WriteString(fmt.Sprintf(" note = '%s'", entry.Note.String))
+		query.WriteString(fmt.Sprintf(" note = '%s'", entry.Note))
 		previous = true
 	}
 
@@ -421,5 +457,47 @@ func (db *Database) UpdateEntry(entry Entry) {
 	if err != nil {
 		log.Fatalf(err.Error())
 		os.Exit(1)
+	}
+
+	// Update the TASK property if one exists.
+	var task = entry.GetTasksAsString()
+	if len(task) > 0 {
+		query.Reset()
+		query.WriteString("UPDATE property")
+		query.WriteString(" SET")
+		query.WriteString(fmt.Sprintf(" value = '%s'", task))
+		query.WriteString(fmt.Sprintf(" WHERE entry_uid = %d and name = '%s';", entry.Uid, constants.TASK))
+
+		if viper.GetBool("debug") {
+			log.Printf("Query[%s]\n", query.String())
+		}
+
+		// Execute the update.
+		_, err = db.Conn.ExecContext(db.Context, query.String())
+		if err != nil {
+			log.Fatalf(err.Error())
+			os.Exit(1)
+		}
+	}
+
+	// Update the URL property if one exists.
+	var url = entry.GetUrlAsString()
+	if len(url) > 0 {
+		query.Reset()
+		query.WriteString("UPDATE property")
+		query.WriteString(" SET")
+		query.WriteString(fmt.Sprintf(" value = '%s'", url))
+		query.WriteString(fmt.Sprintf(" WHERE entry_uid = %d and name = '%s';", entry.Uid, constants.URL))
+
+		if viper.GetBool("debug") {
+			log.Printf("Query[%s]\n", query.String())
+		}
+
+		// Execute the update.
+		_, err = db.Conn.ExecContext(db.Context, query.String())
+		if err != nil {
+			log.Fatalf(err.Error())
+			os.Exit(1)
+		}
 	}
 }

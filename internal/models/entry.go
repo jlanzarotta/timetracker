@@ -43,6 +43,25 @@ func (e *Entry) UpdateEntryProperty(name string, value string) {
 	}
 }
 
+func (e *Entry) GetPropertiesAsString() string {
+	var result string
+	var firstTime bool = true
+
+	for _, element := range e.Properties {
+		if firstTime {
+			firstTime = false
+		} else {
+			result += ", "
+		}
+
+		result += element.Name
+		result += ":"
+		result += element.Value
+	}
+
+	return result
+}
+
 func (e *Entry) GetTasksAsString() string {
 	var result string
 
@@ -64,6 +83,19 @@ func (e *Entry) GetTasksAsString() string {
 		if taskCount > 1 {
 			result += ", "
 			taskCount -= 1
+		}
+	}
+
+	return result
+}
+
+func (e *Entry) GetUrlAsString() string {
+	var result string
+
+	for _, element := range e.Properties {
+		if strings.EqualFold(element.Name, constants.URL) {
+			result = element.Value
+			break
 		}
 	}
 
@@ -95,6 +127,16 @@ func (e *Entry) Dump(vertical bool) string {
 			result += "\n  "
 		}
 		result += " Note[" + e.Note + "]"
+	}
+
+	// Add the URL if there is one.
+	var url = e.GetUrlAsString()
+	if len(url) > 0 {
+		if vertical {
+			result += "\n  "
+		}
+
+		result += " URL[" + url + "]"
 	}
 
 	// Add the Date.

@@ -4,8 +4,10 @@ Copyright © 2023 Jeff Lanzarotta
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"strings"
 	"timetracker/constants"
 
 	"github.com/golang-module/carbon/v2"
@@ -41,6 +43,7 @@ type Configuration struct {
 
 type Favorite struct {
 	Favorite string `yaml:"favorite"`
+	URL      string `yaml:"url"`
 }
 
 func init() {
@@ -91,7 +94,12 @@ func showFavorites() {
 	log.Printf("Favorites found in configuration file[%s]:\n", viper.ConfigFileUsed())
 
 	for i, f := range config.Favorites {
-		log.Printf("Favorite %d: [%s]\n", i, f.Favorite)
+		var b strings.Builder
+		b.WriteString(fmt.Sprintf("Favorite %d: project+task[%s]", i, f.Favorite))
+		if len(f.URL) > 0 {
+			b.WriteString(fmt.Sprintf(" url[%s]", f.URL))
+		}
+		log.Printf("%s\n", b.String())
 	}
 }
 

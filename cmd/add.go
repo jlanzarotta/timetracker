@@ -35,7 +35,8 @@ completed task to the database with an optional note.`,
 
 var favorite int
 
-func getFavorite(index int) string {
+// func getFavorite(index int) string {
+func getFavorite(index int) Favorite {
 	if index < 0 {
 		log.Fatalf("Fatal: Favorite must be >= 0.")
 		os.Exit(1)
@@ -60,7 +61,8 @@ func getFavorite(index int) string {
 		os.Exit(1)
 	}
 
-	return config.Favorites[index].Favorite
+	// return config.Favorites[index].Favorite
+	return config.Favorites[index]
 }
 
 func init() {
@@ -99,6 +101,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 	}
 
 	var projectTask string = constants.EMPTY
+	var url string = constants.EMPTY
 
 	// If a project+task was passed in, use that project+task combination.  If it was not, see if a
 	// favorite was passed in.
@@ -111,7 +114,9 @@ func runAdd(cmd *cobra.Command, args []string) {
 			log.Fatalf("Fatal: Missing project+task or --favorite.")
 			os.Exit(1)
 		} else {
-			projectTask = getFavorite(favorite)
+			var fav Favorite = getFavorite(favorite)
+			projectTask = fav.Favorite
+			url = fav.URL
 		}
 	}
 
@@ -129,6 +134,11 @@ func runAdd(cmd *cobra.Command, args []string) {
 	// Populate the newly created Entry with its tasks.
 	for i := 1; i < len(pieces); i += 1 {
 		entry.AddEntryProperty(constants.TASK, pieces[i])
+	}
+
+	// If a URL was configured for this project+task, add it to the entry.
+	if len(url) > 0 {
+		entry.AddEntryProperty(constants.URL, url)
 	}
 
 	log.Printf("Adding %s.\n", entry.Dump(false))

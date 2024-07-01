@@ -17,17 +17,19 @@ func NewTask(task string) Task {
 }
 
 func (t *Task) AddTaskProperty(name string, value string) {
-	var found bool = false
-	for _, element := range t.Properties {
-		if strings.EqualFold(element.Name, name) && strings.EqualFold(element.Value, value) {
-			found = true
-			break
+	if len(value) > 0 {
+		var found bool = false
+		for _, element := range t.Properties {
+			if strings.EqualFold(element.Name, name) && strings.EqualFold(element.Value, value) {
+				found = true
+				break
+			}
 		}
-	}
 
-	if !found {
-		var property Property = NewProperty(constants.UNKNOWN_UID, name, value)
-		t.Properties = append(t.Properties, property)
+		if !found {
+			var property Property = NewProperty(constants.UNKNOWN_UID, name, value)
+			t.Properties = append(t.Properties, property)
+		}
 	}
 }
 
@@ -52,6 +54,19 @@ func (e *Task) GetProjectsAsString() string {
 		if projectCount > 1 {
 			result += ", "
 			projectCount -= 1
+		}
+	}
+
+	return result
+}
+
+func (e *Task) GetUrlAsString() string {
+	var result string
+
+	for _, element := range e.Properties {
+		if strings.EqualFold(element.Name, constants.URL) {
+			result = element.Value
+			break
 		}
 	}
 

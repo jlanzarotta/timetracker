@@ -64,7 +64,7 @@ func runStretch(cmd *cobra.Command, _ []string) {
 	yesNo := yesNoPrompt(prompt)
 	if yesNo {
 		// Yes was enter, so update the latest.
-		var e database.Entry
+		var e models.Entry
 		e.Uid = entry.Uid
 		e.EntryDatetime = stretchTime.ToIso8601String()
 		db.UpdateEntry(e)

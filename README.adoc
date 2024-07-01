@@ -129,6 +129,27 @@ The previous command tells Time Tracker that you just finished working on the fa
 
 TIP: Configuring and using favorites, help improve consistency as well as improves speed of entering frequently used project/task combinations.
 
+==== url
+
+An optional URL can be added to a favorite.  This URL will show up on various commands and reports.  This URL can be uses to a link to JIRA or any website you need to have linked to favorite.
+
+Here is an example:
+
+[source,properties]
+----
+favorites:
+  - favorite: general+training
+  - favorite: general+product development
+  - favorite: general+personal time
+  - favorite: general+holiday
+  - favorite: general+vacation/PTO/Comp
+  - favorite: project1+screen coding task
+    url: https://jira.yourcompany.com/task/sreen_coding_task
+.
+.
+.
+----
+
 === amend
 
 The `amend` command tells Time Tracker that you are wanting to modify a recent entry's information.  By default, amend amends the most recent entry's information.  How if you would like to get a list of the entries for today, use the `--today` option.  More on the `--today` option below.
