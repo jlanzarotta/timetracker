@@ -4,10 +4,8 @@ Copyright © 2023 Jeff Lanzarotta
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"strings"
 	"timetracker/constants"
 
 	"github.com/golang-module/carbon/v2"
@@ -84,6 +82,7 @@ func showFavorites() {
 	}
 
 	var config Configuration
+	var t table.Writer = table.NewWriter()
 
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
@@ -91,16 +90,32 @@ func showFavorites() {
 		os.Exit(1)
 	}
 
-	log.Printf("Favorites found in configuration file[%s]:\n", viper.ConfigFileUsed())
+	log.Printf("Favorites found in configuration file[%s]:\n\n", viper.ConfigFileUsed())
+
+	var urlFound bool = false
+	for _, f := range config.Favorites {
+		if len(f.URL) > 0 {
+			urlFound = true
+			break
+		}
+	}
+
+	t.Style().Options.DrawBorder = false
+	if urlFound {
+		t.AppendHeader(table.Row{"#", "project+task", "url"})
+	} else {
+		t.AppendHeader(table.Row{"#", "project+task"})
+	}
 
 	for i, f := range config.Favorites {
-		var b strings.Builder
-		b.WriteString(fmt.Sprintf("Favorite %d: project+task[%s]", i, f.Favorite))
 		if len(f.URL) > 0 {
-			b.WriteString(fmt.Sprintf(" url[%s]", f.URL))
+			t.AppendRow(table.Row{i, f.Favorite, f.URL})
+		} else {
+			t.AppendRow(table.Row{i, f.Favorite})
 		}
-		log.Printf("%s\n", b.String())
 	}
+
+	log.Println(t.Render())
 }
 
 func showStatistics() {

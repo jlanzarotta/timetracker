@@ -82,7 +82,7 @@ func yesNoPrompt(label string) bool {
 	var s string
 
 	for {
-		fmt.Fprintf(os.Stderr, "%s (%s) ", label, choices)
+		fmt.Fprintf(os.Stderr, "%s (%s) > ", label, choices)
 		s, _ = r.ReadString('\n')
 		s = strings.TrimSpace(s)
 		s = strings.ToLower(s)

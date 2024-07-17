@@ -114,9 +114,6 @@ favorites:
   - favorite: general+personal time
   - favorite: general+holiday
   - favorite: general+vacation/PTO/Comp
-.
-.
-.
 ----
 
 [source, shell]
@@ -128,6 +125,25 @@ Adding Project[general] Task[training] Date[2023-12-07T14:10:02-05:00].
 The previous command tells Time Tracker that you just finished working on the favorite referenced by the number '0'.  If we look in our _.timetracker.yaml_ file for the '0' favorite, we find that it references the 'project1+task1' combination.  With that, 'project1+task1' would be automatically logged as being completed.
 
 TIP: Configuring and using favorites, help improve consistency as well as improves speed of entering frequently used project/task combinations.
+
+[source, shell]
+----
+$ tt add --favorite
+Favorites found in configuration file[C:\Users\yourname\.timetracker.yaml]:
+
+ # | PROJECT+TASK                | URL
+---+-----------------------------+-------------------------------------------------
+ 0 | general+training            |
+ 1 | general+product development |
+ 2 | general+personal time       |
+ 3 | general+holiday             |
+ 4 | general+vacation/PTO/Comp   |
+
+Please enter the number of the favorite; otherwise, [Return] to quit. > 0
+Adding Project[general] Task[training] Date[2023-12-07T14:10:02-05:00].
+----
+
+The previous command tells Time Tracker that you are unsure of which favorite you want, so show the list of favorites so you can choose.
 
 ==== url
 
@@ -283,11 +299,31 @@ The `favorites` command tells Time Tracker that you would like to show all your 
 [source, shell]
 ----
 $ tt show --favorites
-Favorite 0: [general+training]
-Favorite 1: [general+product development]
-Favorite 2: [general+personal time]
-Favorite 3: [general+holiday]
-Favorite 4: [general+vacation/PTO/Comp]
+Favorites found in configuration file[C:\Users\yourname\.timetracker.yaml]:
+
+ # | PROJECT+TASK                
+---+-----------------------------
+ 0 | general+training
+ 1 | general+product development
+ 2 | general+personal time
+ 3 | general+holiday
+ 4 | general+vacation/PTO/Comp
+----
+
+If one or more of your favorites have an associated URL, your favorites will be shown like this:
+
+[source, shell]
+----
+$ tt show --favorites
+Favorites found in configuration file[C:\Users\yourname\.timetracker.yaml]:
+
+ # | PROJECT+TASK                | URL
+---+-----------------------------+-------------------------------------------------
+ 0 | general+training            | https://yoursite.com/url1
+ 1 | general+product development | https://yoursite.com/url2
+ 2 | general+personal time       |
+ 3 | general+holiday             |
+ 4 | general+vacation/PTO/Comp   |
 ----
 
 ==== statistics

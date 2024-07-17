@@ -165,7 +165,7 @@ func prompt(label string, value string) string {
 	r := bufio.NewReader(os.Stdin)
 	var s string
 
-	fmt.Fprintf(os.Stderr, "Enter %s (empty for no change) ["+value+"] : ", label)
+	fmt.Fprintf(os.Stderr, "Enter %s (empty for no change) ["+value+"] > ", label)
 	s, _ = r.ReadString('\n')
 	s = strings.TrimSpace(s)
 

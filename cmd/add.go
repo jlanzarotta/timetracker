@@ -1,11 +1,11 @@
-/*
-Copyright © 2023 Jeff Lanzarotta
-*/
 package cmd
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 	"timetracker/constants"
@@ -35,10 +35,9 @@ completed task to the database with an optional note.`,
 
 var favorite int
 
-// func getFavorite(index int) string {
 func getFavorite(index int) Favorite {
 	if index < 0 {
-		log.Fatalf("Fatal: Favorite must be >= 0.")
+		log.Fatalf("Favorite must be >= 0.")
 		os.Exit(1)
 	}
 
@@ -56,30 +55,21 @@ func getFavorite(index int) Favorite {
 		os.Exit(1)
 	}
 
-	if index > len(config.Favorites) {
-		log.Fatalf("Fatal: Favorite[%d] not found in configuration file[%s].\n", index, viper.ConfigFileUsed())
+	if index >= len(config.Favorites) {
+		log.Fatalf("Favorite[%d] not found in configuration file[%s].\n", index, viper.ConfigFileUsed())
 		os.Exit(1)
 	}
 
-	// return config.Favorites[index].Favorite
 	return config.Favorites[index]
 }
 
 func init() {
+	// Here you will define your flags and configuration settings.
 	addCmd.Flags().StringVarP(&at, constants.AT, constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
 	addCmd.Flags().StringVarP(&note, constants.NOTE, constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
 	addCmd.Flags().IntVarP(&favorite, constants.FAVORITE, constants.EMPTY, -1, "Favorite")
+	addCmd.Flags().Lookup(constants.FAVORITE).NoOptDefVal = "-1"
 	rootCmd.AddCommand(addCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func runAdd(cmd *cobra.Command, args []string) {
@@ -114,9 +104,39 @@ func runAdd(cmd *cobra.Command, args []string) {
 			log.Fatalf("Fatal: Missing project+task or --favorite.")
 			os.Exit(1)
 		} else {
-			var fav Favorite = getFavorite(favorite)
-			projectTask = fav.Favorite
-			url = fav.URL
+			if favorite < 0 {
+				for {
+					showFavorites()
+
+					// Prompt the user for the index number of the filename they would like to send.
+					r := bufio.NewReader(os.Stdin)
+
+					fmt.Fprintf(os.Stderr, "\nPlease enter the number of the favorite to add; otherwise, [Return] to quit. > ")
+					var s, _ = r.ReadString('\n')
+					s = strings.TrimSpace(s)
+
+					// If the result is empty, use the original passed in value.
+					if len(s) <= 0 {
+						os.Exit(0)
+					}
+
+					// Convert the string to an integer, thus validating the user entered a number.
+					i, err := strconv.Atoi(s)
+					if err != nil {
+						log.Printf("Invalid number entered.\n")
+						continue
+					}
+
+					var fav Favorite = getFavorite(i)
+					projectTask = fav.Favorite
+					url = fav.URL
+					break
+				}
+			} else {
+				var fav Favorite = getFavorite(favorite)
+				projectTask = fav.Favorite
+				url = fav.URL
+			}
 		}
 	}
 
