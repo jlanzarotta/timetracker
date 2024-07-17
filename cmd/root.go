@@ -158,7 +158,7 @@ func initConfig() {
 			writeFavorites(home)
 			log.Printf("Unable to load config file, using/writing default values to [%s].\n", viper.ConfigFileUsed())
 		} else {
-			log.Fatalf("Fatal error reading config file: %s\n", err.Error())
+			log.Fatalf("%s: Error reading config file: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 	}
@@ -191,14 +191,14 @@ func writeFavorites(home string) {
 	viper.SetConfigName(".timetracker")
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatalf("Fatal error reading config file: %s\n", err.Error())
+		log.Fatalf("%s: Error reading config file: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
 	// Open our configuration file.
 	f, err := os.OpenFile(viper.ConfigFileUsed(), os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatalf("Unable to write favorites to configuration file[%s].\n", viper.ConfigFileUsed())
+		log.Fatalf("%s: Unable to write favorites to configuration file[%s].\n", color.RedString(constants.FATAL_NORMAL_CASE), viper.ConfigFileUsed())
 		os.Exit(1)
 	}
 
@@ -218,7 +218,7 @@ func writeFavorites(home string) {
 	for _, line := range lines {
 		_, err := f.WriteString(line + "\n")
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		}
 	}
 }

@@ -13,6 +13,7 @@ import (
 	"timetracker/internal/models"
 
 	"github.com/agrison/go-commons-lang/stringUtils"
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	"github.com/ijt/go-anytime"
 	"github.com/spf13/cobra"
@@ -54,7 +55,7 @@ func greetings(c carbon.Carbon) string {
 	// Get the current system user.
 	currentUser, err := user.Current()
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -74,7 +75,7 @@ func runHello(cmd *cobra.Command, _ []string) {
 	if !stringUtils.IsEmpty(atTimeStr) {
 		atTime, err := anytime.Parse(atTimeStr, time.Now())
 		if err != nil {
-			log.Fatalf("Fatal parsing 'at' time. %s\n", err.Error())
+			log.Fatalf("%s: Error parsing 'at' time. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 

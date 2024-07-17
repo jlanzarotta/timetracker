@@ -18,6 +18,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/agrison/go-commons-lang/stringUtils"
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
@@ -43,7 +44,7 @@ var reportCmd = &cobra.Command{
 func dashes(input string) string {
 	width, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil {
-		log.Fatalf("Fatal getting terminal dimensions. %s\n", err.Error())
+		log.Fatalf("%s: Error getting terminal dimensions. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -522,7 +523,7 @@ func runReport(cmd *cobra.Command, _ []string) {
 		if i == 0 || strings.EqualFold(distinctUIDs[i].Project, constants.HELLO) {
 			var current carbon.Carbon = carbon.Parse(distinctUIDs[i].EntryDatetime)
 			if current.Error != nil {
-				log.Fatalf("Unable to parse EntryDateTime. %s\n", current.Error)
+				log.Fatalf("%s: Unable to parse EntryDateTime. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), current.Error)
 				os.Exit(1)
 			}
 
@@ -533,13 +534,13 @@ func runReport(cmd *cobra.Command, _ []string) {
 		} else {
 			var current carbon.Carbon = carbon.Parse(distinctUIDs[i].EntryDatetime)
 			if current.Error != nil {
-				log.Fatalf("Unable to parse EntryDateTime. %s\n", current.Error)
+				log.Fatalf("%s: Unable to parse EntryDateTime. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), current.Error)
 				os.Exit(1)
 			}
 
 			var prior carbon.Carbon = carbon.Parse(distinctUIDs[i-1].EntryDatetime)
 			if prior.Error != nil {
-				log.Fatalf("Unable to parse EntryDateTime. %s\n", prior.Error)
+				log.Fatalf("%s: Unable to parse EntryDateTime. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), prior.Error)
 				os.Exit(1)
 			}
 
@@ -660,7 +661,7 @@ func secondsToHuman(inSeconds int64) (result string) {
 func weekStart(date carbon.Carbon) carbon.Carbon {
 	dayOfWeek, err := parseWeekday(viper.GetString(constants.WEEK_START))
 	if err != nil {
-		log.Fatalf("%s is an invalid day of week.  Please correct your configuration.\n", viper.GetString(constants.WEEK_START))
+		log.Fatalf("%s: %s is an invalid day of week.  Please correct your configuration.\n", color.RedString(constants.FATAL_NORMAL_CASE), viper.GetString(constants.WEEK_START))
 		os.Exit(1)
 	}
 

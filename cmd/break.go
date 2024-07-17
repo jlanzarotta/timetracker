@@ -12,6 +12,7 @@ import (
 	"timetracker/internal/models"
 
 	"github.com/agrison/go-commons-lang/stringUtils"
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	"github.com/ijt/go-anytime"
 	"github.com/spf13/cobra"
@@ -56,7 +57,7 @@ func runBreak(cmd *cobra.Command, _ []string) {
 	if !stringUtils.IsEmpty(atTimeStr) {
 		atTime, err := anytime.Parse(atTimeStr, time.Now())
 		if err != nil {
-			log.Fatalf("Fatal parsing 'at' time. %s\n", err.Error())
+			log.Fatalf("%s: Error parsing 'at' time. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -67,7 +68,7 @@ func runBreak(cmd *cobra.Command, _ []string) {
 	var entry models.Entry = models.NewEntry(constants.UNKNOWN_UID, constants.BREAK, note,
 		breakTime.ToRfc3339String())
 
-	log.Printf("Adding %s.\n", entry.Dump(false))
+	log.Printf("%s %s.\n", color.GreenString(constants.ADDING), entry.Dump(false))
 
 	// Write the new Entry to the database.
 	db := database.New(viper.GetString(constants.DATABASE_FILE))

@@ -8,6 +8,7 @@ import (
 	"os"
 	"timetracker/constants"
 
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
@@ -77,7 +78,7 @@ func runShow(cmd *cobra.Command, _ []string) {
 func showFavorites() {
 	data, err := os.ReadFile(viper.ConfigFileUsed())
 	if err != nil {
-		log.Fatalf("Error reading configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
+		log.Fatalf("%s: Error reading configuration file[%s]. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), viper.ConfigFileUsed(), err.Error())
 		os.Exit(1)
 	}
 
@@ -86,7 +87,7 @@ func showFavorites() {
 
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
-		log.Fatalf("Error unmarshalling configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
+		log.Fatalf("%s: Error unmarshalling configuration file[%s]. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), viper.ConfigFileUsed(), err.Error())
 		os.Exit(1)
 	}
 

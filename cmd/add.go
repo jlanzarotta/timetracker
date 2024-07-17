@@ -11,6 +11,7 @@ import (
 	"timetracker/constants"
 
 	"github.com/agrison/go-commons-lang/stringUtils"
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	"github.com/ijt/go-anytime"
 	"github.com/spf13/cobra"
@@ -37,13 +38,13 @@ var favorite int
 
 func getFavorite(index int) Favorite {
 	if index < 0 {
-		log.Fatalf("Favorite must be >= 0.")
+		log.Fatalf("%s: Favorite must be >= 0.\n", color.RedString(constants.FATAL_NORMAL_CASE))
 		os.Exit(1)
 	}
 
 	data, err := os.ReadFile(viper.ConfigFileUsed())
 	if err != nil {
-		log.Fatalf("Error reading configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
+		log.Fatalf("%s: Error reading configuration file[%s]. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), viper.ConfigFileUsed(), err.Error())
 		os.Exit(1)
 	}
 
@@ -51,12 +52,12 @@ func getFavorite(index int) Favorite {
 
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
-		log.Fatalf("Error unmarshalling configuration file[%s]. %s\n", viper.ConfigFileUsed(), err.Error())
+		log.Fatalf("%s: Error unmarshalling configuration file[%s]. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), viper.ConfigFileUsed(), err.Error())
 		os.Exit(1)
 	}
 
 	if index >= len(config.Favorites) {
-		log.Fatalf("Favorite[%d] not found in configuration file[%s].\n", index, viper.ConfigFileUsed())
+		log.Fatalf("%s: Favorite[%d] not found in configuration file[%s].\n", color.RedString(constants.FATAL_NORMAL_CASE), index, viper.ConfigFileUsed())
 		os.Exit(1)
 	}
 
@@ -67,8 +68,9 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	addCmd.Flags().StringVarP(&at, constants.AT, constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
 	addCmd.Flags().StringVarP(&note, constants.NOTE, constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
-	addCmd.Flags().IntVarP(&favorite, constants.FAVORITE, constants.EMPTY, -1, "Favorite")
-	addCmd.Flags().Lookup(constants.FAVORITE).NoOptDefVal = "-1"
+	addCmd.Flags().IntVarP(&favorite, constants.FAVORITE, constants.EMPTY, -999, "Favorite")
+	addCmd.Flags().BoolVarP(&favorites, constants.FAVORITES, constants.EMPTY, true, "Favorites")
+	//	addCmd.Flags().Lookup(constants.FAVORITE).NoOptDefVal = "-2"
 	rootCmd.AddCommand(addCmd)
 }
 
@@ -83,7 +85,7 @@ func runAdd(cmd *cobra.Command, args []string) {
 	if !stringUtils.IsEmpty(atTimeStr) {
 		atTime, err := anytime.Parse(atTimeStr, time.Now())
 		if err != nil {
-			log.Fatalf("Fatal parsing 'at' time. %s\n", err.Error())
+			log.Fatalf("%s: Failed parsing 'at' time. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -93,57 +95,54 @@ func runAdd(cmd *cobra.Command, args []string) {
 	var projectTask string = constants.EMPTY
 	var url string = constants.EMPTY
 
-	// If a project+task was passed in, use that project+task combination.  If it was not, see if a
-	// favorite was passed in.
-	if len(args) > 0 {
-		projectTask = args[0]
-	} else {
-		// Get the --favorite flag.
-		favorite, err := cmd.Flags().GetInt(constants.FAVORITE)
-		if err != nil {
-			log.Fatalf("Fatal: Missing project+task or --favorite.")
-			os.Exit(1)
-		} else {
-			if favorite < 0 {
-				for {
-					showFavorites()
+	favorite, _ := cmd.Flags().GetInt(constants.FAVORITE)
+	favorites, _ := cmd.Flags().GetBool(constants.FAVORITES)
 
-					// Prompt the user for the index number of the filename they would like to send.
-					r := bufio.NewReader(os.Stdin)
+	if favorites {
+		for {
+			showFavorites()
 
-					fmt.Fprintf(os.Stderr, "\nPlease enter the number of the favorite to add; otherwise, [Return] to quit. > ")
-					var s, _ = r.ReadString('\n')
-					s = strings.TrimSpace(s)
+			// Prompt the user for the index number of the filename they would like to send.
+			r := bufio.NewReader(os.Stdin)
 
-					// If the result is empty, use the original passed in value.
-					if len(s) <= 0 {
-						os.Exit(0)
-					}
+			fmt.Fprintf(os.Stderr, "\nPlease enter the number of the favorite to add; otherwise, [Return] to quit. > ")
+			var s, _ = r.ReadString('\n')
+			s = strings.TrimSpace(s)
 
-					// Convert the string to an integer, thus validating the user entered a number.
-					i, err := strconv.Atoi(s)
-					if err != nil {
-						log.Printf("Invalid number entered.\n")
-						continue
-					}
-
-					var fav Favorite = getFavorite(i)
-					projectTask = fav.Favorite
-					url = fav.URL
-					break
-				}
-			} else {
-				var fav Favorite = getFavorite(favorite)
-				projectTask = fav.Favorite
-				url = fav.URL
+			// If the result is empty, use the original passed in value.
+			if len(s) <= 0 {
+				os.Exit(0)
 			}
+
+			// Convert the string to an integer, thus validating the user entered a number.
+			i, err := strconv.Atoi(s)
+			if err != nil {
+				log.Printf("Invalid number entered.\n")
+				continue
+			}
+
+			var fav Favorite = getFavorite(i)
+			projectTask = fav.Favorite
+			url = fav.URL
+			break
+		}
+	} else if favorite != -999 {
+		var fav Favorite = getFavorite(favorite)
+		projectTask = fav.Favorite
+		url = fav.URL
+	} else {
+		if len(args) > 0 {
+			projectTask = args[0]
+		} else {
+			log.Fatalf("%s: Missing project+task or --favorite.", color.RedString(constants.FATAL_NORMAL_CASE))
+			os.Exit(1)
 		}
 	}
 
 	// Split the project/task into pieces.
 	var pieces []string = strings.Split(projectTask, constants.TASK_DELIMITER)
 	if len(pieces) < 2 {
-		log.Fatalf("Fatal parsing 'project+task'.  Malformed project+task.\n")
+		log.Fatalf("%s: Unable to parsing 'project+task'.  Malformed project+task.\n", color.RedString(constants.FATAL_NORMAL_CASE))
 		os.Exit(1)
 	}
 
@@ -161,7 +160,8 @@ func runAdd(cmd *cobra.Command, args []string) {
 		entry.AddEntryProperty(constants.URL, url)
 	}
 
-	log.Printf("Adding %s.\n", entry.Dump(false))
+	//log.Printf("Adding %s.\n", entry.Dump(false))
+	log.Printf("%s %s.\n", color.GreenString(constants.ADDING), entry.Dump(false))
 
 	// Write the new Entry to the database.
 	db := database.New(viper.GetString(constants.DATABASE_FILE))

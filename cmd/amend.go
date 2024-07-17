@@ -14,8 +14,10 @@ import (
 	"strings"
 	"timetracker/constants"
 
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	"github.com/jedib0t/go-pretty/v6/table"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -115,7 +117,7 @@ func runAmend(cmd *cobra.Command, _ []string) {
 	// Validate that the user entered a correctly formatted date/time.
 	e := carbon.Parse(newEntryDatetime)
 	if e.Error != nil {
-		log.Fatalf("Invalid ISO8601 date/time format.  Please try to amend again with a valid ISO8601 formatted date/time.")
+		log.Fatalf("%s: Invalid ISO8601 date/time format.  Please try to amend again with a valid ISO8601 formatted date/time.", color.RedString(constants.FATAL_NORMAL_CASE))
 	} else {
 		newEntryDatetime = carbon.Parse(newEntryDatetime).ToIso8601String()
 	}

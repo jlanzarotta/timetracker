@@ -10,6 +10,7 @@ import (
 	"timetracker/constants"
 
 	"github.com/agrison/go-commons-lang/stringUtils"
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	"github.com/ijt/go-anytime"
 	"github.com/spf13/cobra"
@@ -45,7 +46,7 @@ func runStretch(cmd *cobra.Command, _ []string) {
 	if !stringUtils.IsEmpty(atTimeStr) {
 		atTime, err := anytime.Parse(atTimeStr, time.Now())
 		if err != nil {
-			log.Fatalf("Fatal parsing 'at' time. %s\n", err.Error())
+			log.Fatalf("%s: Failed parsing 'at' time. %s\n", color.RedString("Fatal"), err.Error())
 			os.Exit(1)
 		}
 

@@ -1,6 +1,8 @@
 package constants
 
+const ADDING string = "Adding"
 const ALL string = "all"
+const AMENDING string = "Amending"
 const APPLICATION_NAME = "Time Tracker"
 const AT string = "at"
 const BREAK string = "***break"
@@ -14,6 +16,7 @@ const DATE_TIME_NORMAL_CASE = "Date Time"
 const DURATION_NORMAL_CASE = "Duration"
 const DRY_RUN = "dry-run"
 const EMPTY string = ""
+const FATAL_NORMAL_CASE string = "Fatal"
 const FAVORITE string = "favorite"
 const FAVORITES string = "favorites"
 const HELLO string = "***hello"

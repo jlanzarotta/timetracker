@@ -11,6 +11,7 @@ import (
 	"timetracker/constants"
 	"timetracker/internal/models"
 
+	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/viper"
@@ -26,7 +27,7 @@ func New(filename string) *Database {
 	// NOTE: Make sure '_foreign_keys=on' is set or 'DELETE ON CASCADE' will not work.
 	conn, err := sql.Open("sqlite3", filename+"?_loc=UTC&_foreign_keys=on")
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -38,7 +39,7 @@ func New(filename string) *Database {
 	// Ping the database to ensure we are connected.
 	err = db.Conn.Ping()
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -54,7 +55,7 @@ func (db *Database) Create() {
 	query := "CREATE TABLE entry (uid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, project TEXT(128) NOT NULL, note TEXT(128), entry_datetime TEXT NOT NULL);"
 	_, err := db.Conn.Exec(query)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -62,7 +63,7 @@ func (db *Database) Create() {
 	query = "CREATE TABLE property (entry_uid INTEGER NOT NULL, name TEXT(128) NOT NULL, value TEXT(128) NOT NULL, CONSTRAINT property_FK FOREIGN KEY (entry_uid) REFERENCES entry(uid) ON DELETE CASCADE);"
 	_, err = db.Conn.Exec(query)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 }
@@ -70,7 +71,7 @@ func (db *Database) Create() {
 func (db *Database) InsertNewEntry(entry models.Entry) {
 	tx, err := db.Conn.BeginTx(db.Context, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -78,18 +79,18 @@ func (db *Database) InsertNewEntry(entry models.Entry) {
 	if err != nil {
 		rollBackError := tx.Rollback()
 		if rollBackError != nil {
-			log.Fatalf(rollBackError.Error())
+			log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), rollBackError.Error())
 			os.Exit(1)
 		}
 
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
 	// Now that the record was inserted, get the last inserted id... in our case it it the UID.
 	uid, err := result.LastInsertId()
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -99,18 +100,18 @@ func (db *Database) InsertNewEntry(entry models.Entry) {
 		if err != nil {
 			rollBackError := tx.Rollback()
 			if rollBackError != nil {
-				log.Fatalf(rollBackError.Error())
+				log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), rollBackError.Error())
 				os.Exit(1)
 			}
 
-			log.Fatalf(err.Error())
+			log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 }
@@ -126,7 +127,7 @@ func (db *Database) GetDistinctUIDs(start carbon.Carbon, end carbon.Carbon) []Di
 	)
 
 	if err != nil {
-		log.Fatalf("Fatal error trying to retrieve distinct uids. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve distinct uids. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -135,7 +136,7 @@ func (db *Database) GetDistinctUIDs(start carbon.Carbon, end carbon.Carbon) []Di
 		var distinctUID DistinctUID
 		err = results.Scan(&distinctUID.Uid, &distinctUID.Project, &distinctUID.EntryDatetime)
 		if err != nil {
-			log.Fatalf("Fatal error trying to scan results into DistinctUID data structure. %s\n", err.Error())
+			log.Fatalf("%s: Error trying to scan results into DistinctUID data structure. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -150,7 +151,7 @@ func (db *Database) GetProperties(entryUid int64) []Property {
 
 	results, err := db.Conn.Query(s)
 	if err != nil {
-		log.Fatalf("Fatal error trying to retrieve Property records. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve Property records. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -159,7 +160,7 @@ func (db *Database) GetProperties(entryUid int64) []Property {
 		var property Property
 		err = results.Scan(&property.Name, &property.Value)
 		if err != nil {
-			log.Fatalf("Fatal error trying to Scan Property results into data structure. %s\n", err.Error())
+			log.Fatalf("%s: Error trying to Scan Property results into data structure. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -174,7 +175,7 @@ func (db *Database) GetEntries(in string) []models.Entry {
 
 	results, err := db.Conn.Query(s)
 	if err != nil {
-		log.Fatalf("Fatal error trying to retrieve Entry records. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve Entry records. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -183,7 +184,7 @@ func (db *Database) GetEntries(in string) []models.Entry {
 		var entry models.Entry
 		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime)
 		if err != nil {
-			log.Fatalf("Fatal error trying to Scan Entries results into data structure. %s\n", err.Error())
+			log.Fatalf("%s: Error trying to Scan Entries results into data structure. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -203,7 +204,7 @@ func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) [
 
 	results, err := db.Conn.Query(s)
 	if err != nil {
-		log.Fatalf("Fatal error trying to retrieve Entry records. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve Entry records. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -212,7 +213,7 @@ func (db *Database) GetEntriesForToday(start carbon.Carbon, end carbon.Carbon) [
 		var entry Entry
 		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime)
 		if err != nil {
-			log.Fatalf("Fatal error trying to Scan Entries results into data structure. %s\n", err.Error())
+			log.Fatalf("%s: Error trying to Scan Entries results into data structure. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -236,7 +237,7 @@ func (db *Database) getEntry(uid int64) models.Entry {
 	var s string = fmt.Sprintf("SELECT e.uid, e.project, e.note, e.entry_datetime FROM entry e WHERE e.uid = %d ORDER BY entry_datetime;", uid)
 	results, err := db.Conn.QueryContext(db.Context, s)
 	if err != nil {
-		log.Fatalf("Fatal Error trying to retrieve Uid's Entry records. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve Uid's Entry records. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -245,7 +246,7 @@ func (db *Database) getEntry(uid int64) models.Entry {
 		var entry Entry
 		err = results.Scan(&entry.Uid, &entry.Project, &entry.Note, &entry.EntryDatetime)
 		if err != nil {
-			log.Fatalf("Fatal error trying to Scan Uid's Entries results into data structure. %s\n", err.Error())
+			log.Fatalf("%s: Error trying to Scan Uid's Entries results into data structure. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -275,7 +276,7 @@ func (db *Database) getEntry(uid int64) models.Entry {
 func (db *Database) GetFirstEntry() models.Entry {
 	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime LIMIT 1;")
 	if err != nil {
-		log.Fatalf("Fatal error trying to retrieve first Uid. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve first Uid. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -283,7 +284,7 @@ func (db *Database) GetFirstEntry() models.Entry {
 	result.Next()
 	err = result.Scan(&firstUid)
 	if err != nil {
-		log.Fatalf("Fatal error trying to Scan first Uid into data structure. %s\n", err.Error())
+		log.Fatalf("%s: Error trying to Scan first Uid into data structure. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -298,7 +299,7 @@ func (db *Database) GetFirstEntry() models.Entry {
 func (db *Database) GetLastEntry() models.Entry {
 	result, err := db.Conn.QueryContext(db.Context, "SELECT e.uid FROM entry e ORDER BY entry_datetime DESC LIMIT 1;")
 	if err != nil {
-		log.Fatalf("Fatal error trying to retrieve last Uid. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve last Uid. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -306,7 +307,7 @@ func (db *Database) GetLastEntry() models.Entry {
 	result.Next()
 	err = result.Scan(&lastUid)
 	if err != nil {
-		log.Fatalf("Fatal error trying to Scan last Uid into data structure. %s\n", err.Error())
+		log.Fatalf("%s: Error trying to Scan last Uid into data structure. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -321,7 +322,7 @@ func (db *Database) GetLastEntry() models.Entry {
 func (db *Database) GetCountEntries() int64 {
 	result, err := db.Conn.QueryContext(db.Context, "SELECT COUNT(*) FROM entry;")
 	if err != nil {
-		log.Fatalf("Fatal error trying to retrieve count of entries. %s.", err.Error())
+		log.Fatalf("%s: Error trying to retrieve count of entries. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -329,7 +330,7 @@ func (db *Database) GetCountEntries() int64 {
 	result.Next()
 	err = result.Scan(&count)
 	if err != nil {
-		log.Fatalf("Fatal error trying to Scan count. %s\n", err.Error())
+		log.Fatalf("%s: Error trying to Scan count. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -348,20 +349,20 @@ func (db *Database) NukePriorYearsEntries(dryRun bool, year int) int64 {
 		// Create a transaction.
 		tx, err := db.Conn.BeginTx(db.Context, nil)
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
 		// Via the transaction, delete all the entry and associated property records.
 		_, err = tx.ExecContext(db.Context, query.String())
 		if err != nil {
-			log.Fatalf("Fatal error trying to delete all entry before %d. %s.", year, err.Error())
+			log.Fatalf("%s: Error trying to delete all entry before %d. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), year, err.Error())
 			tx.Rollback()
 			os.Exit(1)
 		} else {
 			err = tx.Commit()
 			if err != nil {
-				log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+				log.Fatalf("%s: Error committing transaction. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 				os.Exit(1)
 			}
 		}
@@ -369,14 +370,14 @@ func (db *Database) NukePriorYearsEntries(dryRun bool, year int) int64 {
 		query.WriteString(fmt.Sprintf("%s != '%d';", "SELECT COUNT(*) FROM entry WHERE strftime('%Y', entry_datetime)", year))
 		result, err := db.Conn.QueryContext(db.Context, query.String())
 		if err != nil {
-			log.Fatalf("Fatal error trying to retrieve count of entries. %s.", err.Error())
+			log.Fatalf("%s: Error trying to retrieve count of entries. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
 		result.Next()
 		err = result.Scan(&count)
 		if err != nil {
-			log.Fatalf("Fatal error trying to Scan count. %s\n", err.Error())
+			log.Fatalf("%s: Error trying to Scan count. %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
@@ -393,20 +394,20 @@ func (db *Database) NukeAllEntries(dryRun bool) int64 {
 		// Create a transaction.
 		tx, err := db.Conn.BeginTx(db.Context, nil)
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 
 		// Via the transaction, delete all the entry and associated property records.
 		_, err = tx.ExecContext(db.Context, "DELETE FROM entry;")
 		if err != nil {
-			log.Fatalf("Fatal error trying to delete all entry records. %s.", err.Error())
+			log.Fatalf("%s: Error trying to delete all entry records. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			tx.Rollback()
 			os.Exit(1)
 		} else {
 			err = tx.Commit()
 			if err != nil {
-				log.Fatalf("Fatal error committing transaction. %s.", err.Error())
+				log.Fatalf("%s: Error committing transaction. %s.\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 				os.Exit(1)
 			}
 		}
@@ -455,7 +456,7 @@ func (db *Database) UpdateEntry(entry models.Entry) {
 	// Execute the update.
 	_, err := db.Conn.ExecContext(db.Context, query.String())
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 		os.Exit(1)
 	}
 
@@ -475,7 +476,7 @@ func (db *Database) UpdateEntry(entry models.Entry) {
 		// Execute the update.
 		_, err = db.Conn.ExecContext(db.Context, query.String())
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 	}
@@ -496,7 +497,7 @@ func (db *Database) UpdateEntry(entry models.Entry) {
 		// Execute the update.
 		_, err = db.Conn.ExecContext(db.Context, query.String())
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("%s: %s\n", color.RedString(constants.FATAL_NORMAL_CASE), err.Error())
 			os.Exit(1)
 		}
 	}
