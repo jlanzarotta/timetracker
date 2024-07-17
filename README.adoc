@@ -100,7 +100,7 @@ $ tt add timetracker+programming --note "I love programming."
 
 ==== favorite
 
-The `favorite` command tells Time Tracker that you would like to use one of your preconfigured favorite project/task combinations.  These favorites are stored in the _.timetracker.yaml_ file which is located in the installation directory.  By default, there are 5 preconfigured favorites; however, you can add as many as you would like.
+The `favorite` flag tells Time Tracker that you would like to use one of your preconfigured favorite project/task combinations.  These favorites are stored in the _.timetracker.yaml_ file which is located in the installation directory.  By default, there are 5 preconfigured favorites; however, you can add as many as you would like.
 
 NOTE: Favorites are zero (0) based.
 
@@ -126,18 +126,22 @@ The previous command tells Time Tracker that you just finished working on the fa
 
 TIP: Configuring and using favorites, help improve consistency as well as improves speed of entering frequently used project/task combinations.
 
+==== favorites
+
+If you are not sure the exact favorite # you want to log your time again, you can use the `--favorites` flag.  When using this, a list of favorites are show and you have the opportunity to select from the list.
+
 [source, shell]
 ----
-$ tt add --favorite
+$ tt add --favorites
 Favorites found in configuration file[C:\Users\yourname\.timetracker.yaml]:
 
- # | PROJECT+TASK                | URL
----+-----------------------------+-------------------------------------------------
- 0 | general+training            |
- 1 | general+product development |
- 2 | general+personal time       |
- 3 | general+holiday             |
- 4 | general+vacation/PTO/Comp   |
+ # | PROJECT+TASK
+---+-----------------------------
+ 0 | general+training
+ 1 | general+product development
+ 2 | general+personal time
+ 3 | general+holiday
+ 4 | general+vacation/PTO/Comp
 
 Please enter the number of the favorite; otherwise, [Return] to quit. > 0
 Adding Project[general] Task[training] Date[2023-12-07T14:10:02-05:00].

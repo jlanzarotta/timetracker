@@ -68,9 +68,8 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	addCmd.Flags().StringVarP(&at, constants.AT, constants.EMPTY, constants.EMPTY, constants.NATURAL_LANGUAGE_DESCRIPTION)
 	addCmd.Flags().StringVarP(&note, constants.NOTE, constants.EMPTY, constants.EMPTY, constants.NOTE_DESCRIPTION)
-	addCmd.Flags().IntVarP(&favorite, constants.FAVORITE, constants.EMPTY, -999, "Favorite")
-	addCmd.Flags().BoolVarP(&favorites, constants.FAVORITES, constants.EMPTY, true, "Favorites")
-	//	addCmd.Flags().Lookup(constants.FAVORITE).NoOptDefVal = "-2"
+	addCmd.Flags().IntVarP(&favorite, constants.FAVORITE, constants.EMPTY, -999, "Use the specified Favorite")
+	addCmd.Flags().BoolVarP(&favorites, constants.FAVORITES, constants.EMPTY, false, "Show the list of Favorites what you can select from")
 	rootCmd.AddCommand(addCmd)
 }
 
