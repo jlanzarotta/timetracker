@@ -3,15 +3,12 @@ image:https://img.shields.io/github/downloads/jlanzarotta/timetracker/total[GitH
 image:https://img.shields.io/github/go-mod/go-version/jlanzarotta/timetracker[Go Version]
 
 = Time Tracker
-:toc:
-:toc-placement!:
+:toc: preamble
 :toclevels: 6
 :icons: font
 :sectnums:
 :numbered:
 :table-stripes: even
-
-== Overview
 
 Time Tracker is a simple command line tool use to track the time you spend on a
 specific project and the one or more tasks associated with that project.  It was
