@@ -523,11 +523,11 @@ You can install `timetracker` using [scoop](https://scoop.sh/). It's in the `tim
 
 [source, shell]
 ----
-# Add the extras bucket
-scoop bucket add timetracker
+# Add the timetracker bucket.
+scoop bucket add timetracker https://github.com/jlanzarotta/scoop-timetracker
 
-# Install lazygit
-scoop install timetracker
+# Install timetracker.
+scoop install scoop-timetracker/timetracker
 ----
 
 == Copyright and License
