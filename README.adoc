@@ -1,7 +1,7 @@
 image:https://img.shields.io/github/v/release/jlanzarotta/timetracker[GitHub Release]
 image:https://img.shields.io/github/downloads/jlanzarotta/timetracker/total[GitHub Downloads (all assets, all releases)]
 image:https://img.shields.io/github/go-mod/go-version/jlanzarotta/timetracker[Go Version]
-image:https://img.shields.io/scoop/v/release/jlanzarotta/timetracker[Scoop Version]
+image:https://img.shields.io/scoop/v/jlanzarotta/scoop-timetracker[Scoop Version]
 
 = Time Tracker
 :toc: left
