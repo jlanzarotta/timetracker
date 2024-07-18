@@ -163,6 +163,13 @@ Adding Project[general] Task[training] Date[2023-12-07T14:10:02-05:00].
 
 The previous command tells Time Tracker that you are unsure of which favorite you want, so show the list of favorites so you can choose.
 
+If you are using the `favorites` flag and want to add a note, make sure you use the `note` flag when you make the initial `timetracker` call.  Here is an example:
+
+[source, shell]
+----
+$ tt add --favorites --note "Here is my note associated with the project+task I will eventually select."
+----
+
 ==== url
 
 An optional URL can be added to a favorite.  This URL will show up on various commands and reports.  This URL can be uses to a link to JIRA or any website you need to have linked to favorite.
