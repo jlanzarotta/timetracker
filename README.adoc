@@ -1,6 +1,7 @@
 image:https://img.shields.io/github/v/release/jlanzarotta/timetracker[GitHub Release]
 image:https://img.shields.io/github/downloads/jlanzarotta/timetracker/total[GitHub Downloads (all assets, all releases)]
 image:https://img.shields.io/github/go-mod/go-version/jlanzarotta/timetracker[Go Version]
+image:https://img.shields.io/scoop/v/release/jlanzarotta/timetracker[Scoop Version]
 
 = Time Tracker
 :toc: left
@@ -514,6 +515,20 @@ favorites: <9>
 <7> Should a daily total be shown for each day when rendering the "by day" report.  Default is `true`.
 <8> Indicates if work and break time should be split into seperate values during reports or not.  The default is `false`.
 <9> The list of favorites.
+
+== Installation
+=== Scoop (Windows)
+
+You can install `timetracker` using [scoop](https://scoop.sh/). It's in the `timetracker` bucket:
+
+[source, shell]
+----
+# Add the extras bucket
+scoop bucket add timetracker
+
+# Install lazygit
+scoop install timetracker
+----
 
 == Copyright and License
 
