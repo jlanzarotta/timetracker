@@ -518,7 +518,7 @@ favorites: <9>
 == Installation
 === Scoop (Windows)
 
-You can install `timetracker` using [scoop](https://scoop.sh/). It's in the `timetracker` bucket:
+You can install `timetracker` using [scoop](https://scoop.sh/). It is in the `timetracker` bucket:
 
 [source, shell]
 ----
