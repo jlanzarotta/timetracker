@@ -3,7 +3,8 @@ image:https://img.shields.io/github/downloads/jlanzarotta/timetracker/total[GitH
 image:https://img.shields.io/github/go-mod/go-version/jlanzarotta/timetracker[Go Version]
 
 = Time Tracker
-:toc: left
+:toc:
+:toc-placement!:
 :toclevels: 6
 :icons: font
 :sectnums:
@@ -17,6 +18,21 @@ specific project and the one or more tasks associated with that project.  It was
 inspired by the concepts of utt (Ultimate Time Tracker) and timetrap.
 
 == Installation
+
+=== Scoop (Windows)
+
+You can install `timetracker` using [scoop](https://scoop.sh/). It is in the `timetracker` bucket:
+
+[source, shell]
+----
+# Add the timetracker bucket.
+scoop bucket add timetracker https://github.com/jlanzarotta/scoop-timetracker
+
+# Install timetracker.
+scoop install scoop-timetracker/timetracker
+----
+
+=== Other operating systems
 
 To install Time Tracker, simply unzip the archive for your specific operating system into the directory of your choice.
 
@@ -514,20 +530,6 @@ favorites: <9>
 <7> Should a daily total be shown for each day when rendering the "by day" report.  Default is `true`.
 <8> Indicates if work and break time should be split into seperate values during reports or not.  The default is `false`.
 <9> The list of favorites.
-
-== Installation
-=== Scoop (Windows)
-
-You can install `timetracker` using [scoop](https://scoop.sh/). It is in the `timetracker` bucket:
-
-[source, shell]
-----
-# Add the timetracker bucket.
-scoop bucket add timetracker https://github.com/jlanzarotta/scoop-timetracker
-
-# Install timetracker.
-scoop install scoop-timetracker/timetracker
-----
 
 == Copyright and License
 
