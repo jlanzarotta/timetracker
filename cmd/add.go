@@ -108,8 +108,9 @@ func runAdd(cmd *cobra.Command, args []string) {
 			var s, _ = r.ReadString('\n')
 			s = strings.TrimSpace(s)
 
-			// If the result is empty, use the original passed in value.
+			// If the result is empty, the user wants to quit.
 			if len(s) <= 0 {
+				log.Printf("Nothing added.\n")
 				os.Exit(0)
 			}
 
